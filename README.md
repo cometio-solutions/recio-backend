@@ -1,4 +1,4 @@
-# RecIO backend repository
+# RecIO backend repository :rocket:
 
  - Michał
  - Filip
