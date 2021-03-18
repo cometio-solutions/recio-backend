@@ -1,13 +1,14 @@
 from flask import Flask
 import pymysql
+import os
 
 app = Flask(__name__)
 
 conf = {
-    "host": "db",
+    "host": os.environ['HOST'],
     "port": 3306,
-    "user": "user",
-    "passwd": "password",
+    "user": os.environ['USER'],
+    "passwd": os.environ['PASSWORD'],
     "charset": "utf8mb4",
     "cursorclass": pymysql.cursors.DictCursor,
     "database": "recio"

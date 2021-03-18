@@ -3,6 +3,5 @@ RUN apk add python3
 RUN apk add py-cryptography
 RUN apk add bash
 WORKDIR /app
-COPY . /app
-RUN pip3 install -r requirements.txt
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["python3", "-m", "rest"]
