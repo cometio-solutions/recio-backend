@@ -23,5 +23,7 @@ services:
       - HOST=db
       - USER=user
       - PASSWORD=password
+      - PORT=3306
+      - DATABASE=recio
     expose:
       - 5000
