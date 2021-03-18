@@ -1,0 +1,27 @@
+version: '3.3'
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'recio'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    networks:
+      - backend
+  recio:
+    build: ./
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 5000:5000
+    expose:
+      - 5000
+    networks:
+      - backend
+networks:
+  backend: 
