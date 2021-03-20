@@ -3,14 +3,23 @@ info:
   title: RECIO API
   version: 1.0.0
 host: 127.0.0.1:5000
-basePath: /v1
 tags:
 - name: user
   description: Operations about user
 schemes:
-  - https
   - http
 paths:
+  /:
+    get:
+      summary: base route
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: app name
+  # example
   /user:
     post:
       tags:

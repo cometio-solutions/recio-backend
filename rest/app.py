@@ -1,8 +1,10 @@
 import os
+import json
 from flask import Flask
 import pymysql
 
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 conf = {
     "host": os.environ['HOST'],
@@ -23,4 +25,11 @@ print(cursor.fetchall())
 
 @app.route('/')
 def hello():
-    return "Hello World!"
+    data = {"app": "recio"}
+    response = app.response_class(
+        response=json.dumps(data),
+        status=200,
+        mimetype='application/json'
+    )
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
