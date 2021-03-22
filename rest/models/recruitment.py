@@ -1,4 +1,4 @@
-from rest.app import db
+from rest.db import db
 
 
 class Recruitment(db.Model):

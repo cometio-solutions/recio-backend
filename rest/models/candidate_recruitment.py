@@ -1,5 +1,5 @@
 import enum
-from rest.app import db
+from rest.db import db
 
 
 class RecruitmenStatus(enum.Enum):
