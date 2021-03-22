@@ -112,5 +112,5 @@ definitions:
     properties:
       name: 
         type: string
-      email:
+      user_email:
         type: string
