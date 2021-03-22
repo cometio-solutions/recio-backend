@@ -17,7 +17,7 @@ from rest.models.editor_request import EditorRequest
 from rest.models.major import Major
 from rest.models.recruitment import Recruitment
 from rest.models.candidate import Candidate
-from rest.models.matura_results import MaturaResult
+from rest.models.matura_result import MaturaResult
 from rest.models.candidate_recruitment import CandidateRecruitment
 
 db.drop_all()
