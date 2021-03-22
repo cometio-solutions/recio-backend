@@ -1,0 +1,116 @@
+swagger: "2.0"
+info:
+  title: RECIO API
+  version: 1.0.0
+host: 127.0.0.1:5000
+tags:
+- name: user
+  description: Operations about user
+schemes:
+  - http
+paths:
+  /:
+    get:
+      summary: base route
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: app name
+  # example
+  /user:
+    post:
+      tags:
+      - user
+      summary: Enables user to create account in our system
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - in: body
+        name: body
+        description: User data that is needed to create user account in our system
+        required: true
+        schema:
+          $ref: '#/definitions/CreateUserData'
+      responses:
+        201:
+          description: user account created
+        400:
+          description: invalid data supplied
+        409:
+          description: given email is already taken
+  /user/auth:
+    post:
+      tags:
+      - user
+      summary: Logs user into the system
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Data that is needed to authenticate user
+        required: true
+        schema:
+          $ref: '#/definitions/LoginUserData'
+      responses:
+        200:
+          description: authenticated
+        400:
+          description: invalid email or password
+  /user/editorRequests:
+    get:
+      tags:
+      - user
+      summary: Returns editor requests made by users. Available only for admin.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: editor requests fetched
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/EditorRequest'
+        401:
+          description: user is unauthenticated
+        403:
+          description: only admin have access to that
+
+        
+definitions:
+  CreateUserData:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        description: should be unique in the system
+        type: string
+      password:
+        type: string
+      editorRequest:
+        description: if set to true, editor request to admin will be send
+        type: boolean
+  LoginUserData:
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+  EditorRequest:
+    type: object
+    properties:
+      name: 
+        type: string
+      email:
+        type: string
