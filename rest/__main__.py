@@ -1,12 +1,11 @@
 import json
+import re
 from rest.app import create_app, setup_database
-
-
-from flask import request
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
 from rest.db import db
-import re
+from flask import request
+
 
 app = create_app()
 setup_database(app)
@@ -36,7 +35,7 @@ def register():
         data["invalid_name"] = name
     if not email.endswith('agh.edu.pl') or re.match('^[.@a-zA-Z0-9_-]+$', email) is None:
         data["invalid_email"] = email
-    if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', password) is None:
+    if len(password) < 3 or len(password) > 30 or re.match('^[.a-zA-Z0-9_-]+$', password) is None:
         data["invalid_password"] = password
 
     if len(data) > 0:
@@ -107,7 +106,7 @@ def admin_editor_requests():
     email = request.cookies.get('email')
     user = User.query.filter_by(email=email).first()
 
-    if not user.is_editor:
+    if not user or not user.is_editor:
         return app.response_class(response=json.dumps({'is_editor': False}), status=403, mimetype='application/json')
 
     users = User.query.all()
