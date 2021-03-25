@@ -6,7 +6,6 @@ from flask import request
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
 from rest.db import db
-import sys
 import re
 
 app = create_app()
@@ -81,12 +80,6 @@ def login():
     password = request.form.get('password')
 
     user = User.query.filter_by(email=email).first()
-
-    print("PASSWORD:", password, file=sys.stderr)
-    print("EMAIL:", email, file=sys.stderr)
-
-    print("DB PASSWORD:", user.password, file=sys.stderr)
-    print("DB EMAIL:", user.email, file=sys.stderr)
 
     if user and user.password == password:
         data = {'auth': True}
