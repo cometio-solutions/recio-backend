@@ -13,5 +13,5 @@ jobs:
       with:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.RECIO_REMOTE_SSH }}
+        key: ${{ secrets.SSH_KEY }}
         script: cd /root/recio-backend && git pull && docker-compose up -d
