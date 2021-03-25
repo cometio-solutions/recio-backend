@@ -2,11 +2,12 @@ import json
 from rest.app import create_app, setup_database
 
 
-from flask import request, redirect, flash
+from flask import request
 from rest.models.user import User
+from rest.models.editor_request import EditorRequest
 from rest.db import db
-import requests
 import sys
+import re
 
 app = create_app()
 setup_database(app)
@@ -24,52 +25,106 @@ def hello():
     return response
 
 
-@app.route('/signup', methods=['POST', 'GET'])
-def signup():
-    if request.method == 'POST':
-        email = request.form.get('email')
-        name = request.form.get('name')
-        password = request.form.get('password')
+@app.route('/user', methods=['POST'])
+def register():
+    email = request.form.get('email')
+    name = request.form.get('name')
+    password = request.form.get('password')
+    editor_request = request.form.get('editorRequest')
 
-        if len(name) < 3 or len(name) > 30:
-            flash("Name has to be between 3 and 30 characters")
-            return redirect('/signup')
+    data = {}
+    if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', name) is None:
+        data["invalid_name"] = name
+    if not email.endswith('agh.edu.pl') or re.match('^[.@a-zA-Z0-9_-]+$', email) is None:
+        data["invalid_email"] = email
+    if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', password) is None:
+        data["invalid_password"] = password
 
-        if not email.endswith('agh.edu.pl'):
-            flash("Only agh.edu.pl emails are accepted")
-            return redirect('/signup')
+    if len(data) > 0:
+        response = app.response_class(
+            response=json.dumps(data),
+            status=400,
+            mimetype='application/json'
+        )
+        return response
 
-        if len(name) < 3 or len(name) > 30:
-            flash("Password has to be between 3 and 30 characters")
-            return redirect('/signup')
+    check_user = User.query.filter_by(email=email).first()
 
-        print("EMAIL:", email, file=sys.stderr)
-        print("LOGIN:", name, file=sys.stderr)
-        print("PASSWORD:", password, file=sys.stderr)
+    if check_user:
+        response = app.response_class(
+            response=json.dumps({"email_taken": email}),
+            status=409,
+            mimetype='application/json'
+        )
+        return response
 
-        user = User.query.filter_by(email=email).first()
+    new_user = User(email, name, password, False)
+    db.session.add(new_user)
 
-        if user:
-            print("Email address already exists", file=sys.stderr)
-            flash('Email address already exists')
-            return redirect('/signup')
+    if editor_request:
+        new_editor_request = EditorRequest(email, name)
+        db.session.add(new_editor_request)
 
-        new_user = User(email, name, password, False)
+    db.session.commit()
 
-        db.session.add(new_user)
-        db.session.commit()
-        print(User.query.all(), file=sys.stderr)
-
-        return redirect('/')
-
-    return 'signup'
+    response = app.response_class(
+        response=json.dumps({"name": name, "email": email, "password": password, "editorRequest": editor_request}),
+        status=200,
+        mimetype='application/json'
+    )
+    return response
 
 
-@app.route('/test')
-def test():
-    dictToSend = {"email": "xd@xd", "name": "xd", "password": "xd1"}
-    res = requests.post("http://0.0.0.0:5000/signup", data=dictToSend)
-    return 'response from server: '
+@app.route('/user/auth', methods=['POST'])
+def login():
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    user = User.query.filter_by(email=email).first()
+
+    print("PASSWORD:", password, file=sys.stderr)
+    print("EMAIL:", email, file=sys.stderr)
+
+    print("DB PASSWORD:", user.password, file=sys.stderr)
+    print("DB EMAIL:", user.email, file=sys.stderr)
+
+    if user and user.password == password:
+        data = {'auth': True}
+        status = 200
+    else:
+        data = {'auth': False}
+        status = 400
+
+    response = app.response_class(
+            response=json.dumps(data),
+            status=status,
+            mimetype='application/json'
+        )
+    if status == 200:
+        response.set_cookie('email', value=email)
+
+    return response
+
+
+@app.route('/user/editorRequests', methods=['GET'])
+def admin_editor_requests():
+    if 'email' not in request.cookies:
+        return app.response_class(response=json.dumps({'cookie': False}), status=401, mimetype='application/json')
+
+    email = request.cookies.get('email')
+    user = User.query.filter_by(email=email).first()
+
+    if not user.is_editor:
+        return app.response_class(response=json.dumps({'is_editor': False}), status=403, mimetype='application/json')
+
+    users = User.query.all()
+    data = [{'name': u.name, 'user_email': u.email} for u in users]
+
+    return app.response_class(
+            response=json.dumps(data),
+            status=200,
+            mimetype='application/json'
+        )
 
 
 app.run(host='0.0.0.0')
