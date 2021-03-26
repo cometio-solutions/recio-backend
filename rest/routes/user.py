@@ -10,6 +10,10 @@ user_url = Blueprint('user', __name__)
 
 @user_url.route('/', methods=['POST'])
 def register():
+    """
+    Try to add new user to database
+    :return: registration success status and json of what went wrong if unsuccessful
+    """
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
@@ -41,10 +45,12 @@ def register():
         )
         return response
 
-    new_user = User(email, name, password, False)
+    is_admin = email.endswith('@admin.agh.edu.pl')
+
+    new_user = User(email, name, password, is_admin)
     db.session.add(new_user)
 
-    if editor_request:
+    if editor_request and not is_admin:
         new_editor_request = EditorRequest(email, name)
         db.session.add(new_editor_request)
 
@@ -60,13 +66,17 @@ def register():
 
 @user_url.route('/auth', methods=['POST'])
 def login():
+    """
+    Try to login user
+    :return: login success status and user role if successful
+    """
     email = request.form.get('email')
     password = request.form.get('password')
 
     user = User.query.filter_by(email=email).first()
 
     if user and user.password == password:
-        if user.email == 'admin@admin.agh.edu.pl':
+        if user.email.endswith('@admin.agh.edu.pl'):
             role = 'admin'
         elif user.is_editor:
             role = 'editor'
@@ -92,6 +102,10 @@ def login():
 
 @user_url.route('/editorRequests', methods=['GET', 'POST'])
 def admin_editor_requests():
+    """
+    Either get (GET) editor requests or give (POST) user editor status
+    :return: success status and json editor requests (if GET)
+    """
     if request.method == 'POST':
         email = request.form.get('email')
         name = request.form.get('name')
@@ -124,7 +138,7 @@ def admin_editor_requests():
         email = request.cookies.get('email')
         user = User.query.filter_by(email=email).first()
 
-        if not user or not email == 'admin@admin.agh.edu.pl':
+        if not user or not email.endswith('@admin.agh.edu.pl'):
             status = 403
             data = {'is_admin': False}
         else:
