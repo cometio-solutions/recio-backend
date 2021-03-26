@@ -7,8 +7,11 @@ URL_USER_AUTH = 'http://127.0.0.1:5000/user/auth'
 URL_USER_EDITOR = 'http://127.0.0.1:5000/user/editorRequests'
 
 """
-Before running these tests there cannot be an user with
-email: 'proper@test.agh.edu.pl' or 'proper@test.student.agh.edu.pl'
+Before running these tests there cannot be users with these emails in database:
+'proper@test.agh.edu.pl'
+'proper@test.student.agh.edu.pl'
+'login@agh.edu.pl'
+'register@agh.edu.pl'
 in database or it will fail.
 
 'docker-compose up' must be run before so that requests go through.
@@ -47,7 +50,7 @@ def test_valid_registration_input():
 
 def test_login():
     data = {'name': 'proper_name', 'email': 'login@agh.edu.pl',
-            'password': '12345', 'editorRequest': False}
+            'password': '12345', 'editorRequest': True}
     requests.post(URL_USER, data=data)
     login_data = {'email': 'login@agh.edu.pl', 'password': '12345'}
     assert requests.post(URL_USER_AUTH, data=login_data).status_code == 200
@@ -65,6 +68,15 @@ def test_login_role():
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))
     assert data['role'] == 'user'
+
+    data = {'name': 'proper_name', 'email': 'login@agh.edu.pl'}
+    response = requests.post(URL_USER_EDITOR, data=data)
+    assert response.status_code == 200
+
+    response = requests.post(URL_USER_AUTH, data=login_data)
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+    assert data['role'] == 'editor'
 
     login_data = {'email': 'admin@admin.agh.edu.pl', 'password': 'admin'}
     response = requests.post(URL_USER_AUTH, data=login_data)
