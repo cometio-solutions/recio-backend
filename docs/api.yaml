@@ -84,6 +84,25 @@ paths:
           description: user is unauthenticated
         403:
           description: only admin have access to that
+    post:
+      tags:
+        - user
+      summary: changes user role to editor
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Data that is needed to authenticate user
+          required: true
+          schema:
+            $ref: '#/definitions/EditorRequest'
+          200:
+            description: Role changed to editor
+          400:
+            description: invalid email or password
 
         
 definitions:
@@ -112,5 +131,5 @@ definitions:
     properties:
       name: 
         type: string
-      user_email:
+      email:
         type: string

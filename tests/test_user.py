@@ -55,6 +55,23 @@ def test_login():
     login_data = {'email': 'login2@agh.edu.pl', 'password': '12345'}
     assert requests.post(URL_USER_AUTH, data=login_data).status_code == 400
 
+    login_data = {'email': 'login@agh.edu.pl', 'password': '123435'}
+    assert requests.post(URL_USER_AUTH, data=login_data).status_code == 400
+
+
+def test_login_role():
+    login_data = {'email': 'login@agh.edu.pl', 'password': '12345'}
+    response = requests.post(URL_USER_AUTH, data=login_data)
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+    assert data['role'] == 'user'
+
+    login_data = {'email': 'admin@admin.agh.edu.pl', 'password': 'admin'}
+    response = requests.post(URL_USER_AUTH, data=login_data)
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+    assert data['role'] == 'admin'
+
 
 def test_admin_editor_request():
     data = {'name': 'proper_name', 'email': 'register@agh.edu.pl',
@@ -82,3 +99,23 @@ def test_admin_editor_request():
     assert len(data) == 1
     assert data[0]['name'] == 'proper_name'
     assert data[0]['user_email'] == 'register@agh.edu.pl'
+
+
+def test_changing_editor_status():
+    data = {'name': 'proper_name', 'email': 'register@agh.edu.pl'}
+    response = requests.post(URL_USER_EDITOR, data=data)
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+    assert data['is_editor']
+
+    response = requests.get(
+        URL_USER_EDITOR,
+        cookies={'email': 'admin@admin.agh.edu.pl'}
+    )
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+    assert len(data) == 0
+
+    data = {'name': 'proper_name', 'email': 'register@agh.edu.pl'}
+    response = requests.post(URL_USER_EDITOR, data=data)
+    assert response.status_code == 400

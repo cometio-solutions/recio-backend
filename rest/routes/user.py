@@ -5,7 +5,6 @@ from rest.db import db
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
 
-
 user_url = Blueprint('user', __name__)
 
 
@@ -67,25 +66,57 @@ def login():
     user = User.query.filter_by(email=email).first()
 
     if user and user.password == password:
-        data = {'auth': True}
+        if user.email == 'admin@admin.agh.edu.pl':
+            role = 'admin'
+        elif user.is_editor:
+            role = 'editor'
+        else:
+            role = 'user'
+
+        data = {'auth': True, 'role': role}
         status = 200
     else:
         data = {'auth': False}
         status = 400
 
     response = Response(
-            response=json.dumps(data),
-            status=status,
-            mimetype='application/json'
-        )
+        response=json.dumps(data),
+        status=status,
+        mimetype='application/json'
+    )
     if status == 200:
         response.set_cookie('email', value=email)
 
     return response
 
 
-@user_url.route('/editorRequests', methods=['GET'])
+@user_url.route('/editorRequests', methods=['GET', 'POST'])
 def admin_editor_requests():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        name = request.form.get('name')
+
+        check_user = User.query.filter_by(email=email).first()
+        check_editor_request = EditorRequest.query.filter_by(user_email=email).first()
+
+        if not check_user or not check_editor_request or \
+                check_user.name != name or check_editor_request.name != name:
+            status = 400
+            data = {'data': 'invalid'}
+        else:
+            check_user.is_editor = True
+            db.session.delete(check_editor_request)
+            db.session.commit()
+
+            status = 200
+            data = {'data': 'valid', 'is_editor': check_user.is_editor}
+
+        return Response(
+            response=json.dumps(data),
+            status=status,
+            mimetype='application/json'
+        )
+
     if 'email' not in request.cookies:
         status = 401
         data = {'cookie': False}
@@ -102,7 +133,7 @@ def admin_editor_requests():
             data = [{'name': u.name, 'user_email': u.user_email} for u in editor_requests]
 
     return Response(
-            response=json.dumps(data),
-            status=status,
-            mimetype='application/json'
-        )
+        response=json.dumps(data),
+        status=status,
+        mimetype='application/json'
+    )
