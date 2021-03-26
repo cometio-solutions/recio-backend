@@ -14,7 +14,7 @@ def register():
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
-    editor_request = True if request.form.get('editorRequest') == 'True' else False
+    editor_request = request.form.get('editorRequest') == 'True'
 
     data = {}
     if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', name) is None:
