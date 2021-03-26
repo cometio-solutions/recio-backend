@@ -22,18 +22,22 @@ def test_login_role():
     data = json.loads(response.content.decode('utf-8'))
     assert data['role'] == 'user'
 
+    data = {'name': 'admin_test', 'email': 'admin_test@admin.agh.edu.pl',
+            'password': 'admin_test', 'editorRequest': False}
+    assert requests.post(url_user, data=data).status_code == 200
+
     data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl'}
-    response = requests.post(url_user_editor, data=data)
+    response = requests.post(
+        url_user_editor,
+        data=data,
+        cookies={'email': 'admin_test@admin.agh.edu.pl'}
+    )
     assert response.status_code == 200
 
     response = requests.post(url_user_auth, data=login_data)
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))
     assert data['role'] == 'editor'
-
-    data = {'name': 'admin_test', 'email': 'admin_test@admin.agh.edu.pl',
-            'password': 'admin_test', 'editorRequest': False}
-    assert requests.post(url_user, data=data).status_code == 200
 
     login_data = {'email': 'admin_test@admin.agh.edu.pl', 'password': 'admin_test'}
     response = requests.post(url_user_auth, data=login_data)

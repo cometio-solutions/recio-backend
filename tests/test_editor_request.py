@@ -39,4 +39,4 @@ def test_admin_editor_request():
     data = json.loads(response.content.decode('utf-8'))
     assert len(data) == 1
     assert data[0]['name'] == 'proper_name'
-    assert data[0]['user_email'] == 'register_req@test.agh.edu.pl'
+    assert data[0]['email'] == 'register_req@test.agh.edu.pl'

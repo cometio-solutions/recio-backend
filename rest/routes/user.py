@@ -12,6 +12,10 @@ user_url = Blueprint('user', __name__)
 def register():
     """
     Try to add new user to database
+    if status 400 returns json (at least one field):
+        'name': given_name
+        'email': given_email
+        'password': given_password
     :return: registration success status and json of what went wrong if unsuccessful
     """
     email = request.form.get('email')
@@ -21,11 +25,11 @@ def register():
 
     data = {}
     if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', name) is None:
-        data['invalid_name'] = name
+        data['name'] = name
     if not email.endswith('agh.edu.pl') or re.match('^[.@a-zA-Z0-9_-]+$', email) is None:
-        data['invalid_email'] = email
+        data['email'] = email
     if len(password) < 3 or len(password) > 30 or re.match('^[.a-zA-Z0-9_-]+$', password) is None:
-        data['invalid_password'] = password
+        data['password'] = password
 
     if len(data) > 0:
         response = Response(
@@ -39,7 +43,7 @@ def register():
 
     if check_user:
         response = Response(
-            response=json.dumps({'email_taken': email}),
+            response=json.dumps({}),
             status=409,
             mimetype='application/json'
         )
@@ -67,7 +71,8 @@ def register():
 @user_url.route('/auth', methods=['POST'])
 def login():
     """
-    Try to login user
+    Try to login user+
+    if status 200 returns json {'role': user_role} and sets response cookie - 'email': email
     :return: login success status and user role if successful
     """
     email = request.form.get('email')
@@ -83,10 +88,10 @@ def login():
         else:
             role = 'user'
 
-        data = {'auth': True, 'role': role}
+        data = {'role': role}
         status = 200
     else:
-        data = {'auth': False}
+        data = {}
         status = 400
 
     response = Response(
@@ -104,8 +109,23 @@ def login():
 def admin_editor_requests():
     """
     Either get (GET) editor requests or give (POST) user editor status
+    Requires 'email' field in cookies.
+    if method GET and status 200 returns json:
+        list of [
+            'name': name
+            'email': email
+        ]
     :return: success status and json editor requests (if GET)
     """
+    if 'email' not in request.cookies:
+        return Response(response=json.dumps({}), status=401, mimetype='application/json')
+
+    email = request.cookies.get('email')
+    user = User.query.filter_by(email=email).first()
+
+    if not user or not email.endswith('@admin.agh.edu.pl'):
+        return Response(response=json.dumps({}), status=403, mimetype='application/json')
+
     if request.method == 'POST':
         email = request.form.get('email')
         name = request.form.get('name')
@@ -115,39 +135,17 @@ def admin_editor_requests():
 
         if not check_user or not check_editor_request or \
                 check_user.name != name or check_editor_request.name != name:
-            status = 400
-            data = {'data': 'invalid'}
+            status = 409
         else:
             check_user.is_editor = True
             db.session.delete(check_editor_request)
             db.session.commit()
 
             status = 200
-            data = {'data': 'valid', 'is_editor': check_user.is_editor}
 
-        return Response(
-            response=json.dumps(data),
-            status=status,
-            mimetype='application/json'
-        )
+        return Response(response=json.dumps({}), status=status, mimetype='application/json')
 
-    if 'email' not in request.cookies:
-        status = 401
-        data = {'cookie': False}
-    else:
-        email = request.cookies.get('email')
-        user = User.query.filter_by(email=email).first()
+    editor_requests = EditorRequest.query.all()
+    data = [{'name': u.name, 'email': u.user_email} for u in editor_requests]
 
-        if not user or not email.endswith('@admin.agh.edu.pl'):
-            status = 403
-            data = {'is_admin': False}
-        else:
-            status = 200
-            editor_requests = EditorRequest.query.all()
-            data = [{'name': u.name, 'user_email': u.user_email} for u in editor_requests]
-
-    return Response(
-        response=json.dumps(data),
-        status=status,
-        mimetype='application/json'
-    )
+    return Response(response=json.dumps(data), status=200, mimetype='application/json')

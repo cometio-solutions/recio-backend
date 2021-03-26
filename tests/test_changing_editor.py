@@ -16,14 +16,41 @@ def test_changing_editor_status():
     assert requests.post(url_user, data=data).status_code == 200
 
     data = {'name': 'proper_name', 'email': 'editor@test.agh.edu.pl'}
-    response = requests.post(url_user_editor, data=data)
-    assert response.status_code == 200
-    data = json.loads(response.content.decode('utf-8'))
-    assert data['is_editor']
+    assert requests.post(url_user_editor, data=data).status_code == 401
+
+    assert requests.post(
+        url_user_editor,
+        data=data,
+        cookies={'email': 'editor@test.agh.edu.pl'}
+    ).status_code == 403
 
     data = {'name': 'admin_test', 'email': 'admin_test3@admin.agh.edu.pl',
             'password': 'admin_test', 'editorRequest': False}
     assert requests.post(url_user, data=data).status_code == 200
+
+    response = requests.get(
+        url_user_editor,
+        cookies={'email': 'editor@test.agh.edu.pl'}
+    )
+    assert response.status_code == 403
+
+    response = requests.get(
+        url_user_editor,
+        cookies={'email': 'admin_test3@admin.agh.edu.pl'}
+    )
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+    assert len(data) == 1
+    assert data[0]['name'] == 'proper_name'
+    assert data[0]['email'] == 'editor@test.agh.edu.pl'
+
+    data = {'name': 'proper_name', 'email': 'editor@test.agh.edu.pl'}
+    response = requests.post(
+        url_user_editor,
+        data=data,
+        cookies={'email': 'admin_test3@admin.agh.edu.pl'}
+    )
+    assert response.status_code == 200
 
     response = requests.get(
         url_user_editor,
@@ -33,6 +60,10 @@ def test_changing_editor_status():
     data = json.loads(response.content.decode('utf-8'))
     assert len(data) == 0
 
-    data = {'name': 'proper_name', 'email': 'editor@test.agh.edu.pl'}
-    response = requests.post(url_user_editor, data=data)
-    assert response.status_code == 400
+    data = {'name': 'proper_name', 'email': 'invalid@test.agh.edu.pl'}
+    response = requests.post(
+        url_user_editor,
+        data=data,
+        cookies={'email': 'admin_test3@admin.agh.edu.pl'}
+    )
+    assert response.status_code == 409
