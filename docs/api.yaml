@@ -37,10 +37,12 @@ paths:
         schema:
           $ref: '#/definitions/CreateUserData'
       responses:
-        201:
+        200:
           description: user account created
         400:
-          description: invalid data supplied
+          description: invalid data supplied (at least one item in response)
+          schema:
+            $ref: '#/definitions/InvalidRegisterInput'
         409:
           description: given email is already taken
   /user/auth:
@@ -62,6 +64,8 @@ paths:
       responses:
         200:
           description: authenticated
+          schema:
+            $ref: '#/definitions/UserRole'
         400:
           description: invalid email or password
   /user/editorRequests:
@@ -84,6 +88,30 @@ paths:
           description: user is unauthenticated
         403:
           description: only admin have access to that
+    post:
+      tags:
+        - user
+      summary: changes user role to editor
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: Data that is needed to authenticate user
+          required: true
+          schema:
+            $ref: '#/definitions/EditorRequest'
+      responses:
+        200:
+          description: Role changed to editor
+        401:
+          description: user is unauthenticated
+        403:
+          description: only admin have access to that
+        409:
+          description: invalid user information
 
         
 definitions:
@@ -112,5 +140,23 @@ definitions:
     properties:
       name: 
         type: string
-      user_email:
+      email:
+        type: string
+  UserRole:
+    type: object
+    properties:
+      role:
+        description: either 'user', 'editor' or 'admin'
+        type: string
+  InvalidRegisterInput:
+    type: object
+    properties:
+      name:
+        description: provided name is invalid (optional)
+        type: string
+      email:
+        description: provided email is invalid (optional)
+        type: string
+      password:
+        description: provided password is invalid (optional)
         type: string
