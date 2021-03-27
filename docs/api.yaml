@@ -81,7 +81,7 @@ paths:
     get:
       tags:
       - user
-      summary: Returns editor requests made by users. Available only for admin. Needs 'email' field in cookies.
+      summary: Returns editor requests made by users. Available only for admin. Needs 'email' field in headers.
       consumes:
         - application/json
       produces:
@@ -102,7 +102,7 @@ paths:
     post:
       tags:
         - user
-      summary: Chenges role from 'user' to 'editor'. Needs 'email' field in cookies.
+      summary: Chenges role from 'user' to 'editor'. Needs 'email' field in headers.
       consumes:
         - application/json
       produces:
