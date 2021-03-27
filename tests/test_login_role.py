@@ -14,33 +14,33 @@ def test_login_role():
 
     data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl',
             'password': '12345', 'editorRequest': True}
-    assert requests.post(url_user, data=data).status_code == 200
+    assert requests.post(url_user, json=data).status_code == 200
 
     login_data = {'email': 'login_role@test.agh.edu.pl', 'password': '12345'}
-    response = requests.post(url_user_auth, data=login_data)
+    response = requests.post(url_user_auth, json=login_data)
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))
     assert data['role'] == 'user'
 
     data = {'name': 'admin_test', 'email': 'admin_test@admin.agh.edu.pl',
             'password': 'admin_test', 'editorRequest': False}
-    assert requests.post(url_user, data=data).status_code == 200
+    assert requests.post(url_user, json=data).status_code == 200
 
     data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl'}
     response = requests.post(
         url_user_editor,
-        data=data,
-        cookies={'email': 'admin_test@admin.agh.edu.pl'}
+        json=data,
+        headers={'email': 'admin_test@admin.agh.edu.pl'}
     )
     assert response.status_code == 200
 
-    response = requests.post(url_user_auth, data=login_data)
+    response = requests.post(url_user_auth, json=login_data)
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))
     assert data['role'] == 'editor'
 
     login_data = {'email': 'admin_test@admin.agh.edu.pl', 'password': 'admin_test'}
-    response = requests.post(url_user_auth, data=login_data)
+    response = requests.post(url_user_auth, json=login_data)
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))
     assert data['role'] == 'admin'

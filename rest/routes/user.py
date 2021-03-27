@@ -21,7 +21,7 @@ def register():
     """
     if request.method == 'OPTIONS':
         response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        response.headers.add('Access-Control-Allow-Origin', '*')
         response.headers.add('Access-Control-Allow-Headers', 'content-type')
         return response
 
@@ -99,7 +99,7 @@ def login():
         status = 400
 
     response = Response(response=json.dumps(data), status=status, mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+    response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -124,13 +124,13 @@ def admin_editor_requests():
     """
     if request.method == 'OPTIONS':
         response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        response.headers.add('Access-Control-Allow-Origin', '*')
         response.headers.add('Access-Control-Allow-Headers', 'email, content-type')
         return response
 
     if 'email' not in request.headers:
         response = Response(response=json.dumps({}), status=401, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
     email = request.headers['email']
@@ -138,7 +138,7 @@ def admin_editor_requests():
 
     if not user or not email.endswith('@admin.agh.edu.pl'):
         response = Response(response=json.dumps({}), status=403, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
     if request.method == 'POST':
@@ -159,12 +159,12 @@ def admin_editor_requests():
             status = 200
 
         response = Response(response=json.dumps({}), status=status, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
     editor_requests = EditorRequest.query.all()
     data = [{'name': u.name, 'email': u.user_email} for u in editor_requests]
 
     response = Response(response=json.dumps(data), status=200, mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response

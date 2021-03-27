@@ -13,27 +13,27 @@ def test_admin_editor_request():
 
     data = {'name': 'proper_name', 'email': 'register_req@test.agh.edu.pl',
             'password': '12345', 'editorRequest': True}
-    assert requests.post(url_user, data=data).status_code == 200
+    assert requests.post(url_user, json=data).status_code == 200
 
     assert requests.get(url_user_editor).status_code == 401
 
     assert requests.get(
         url_user_editor,
-        cookies={'email': 'register_req@test.agh.edu.pl'}
+        headers={'email': 'register_req@test.agh.edu.pl'}
     ).status_code == 403
 
     assert requests.get(
         url_user_editor,
-        cookies={'email': 'non_existed_register@agh.edu.pl'}
+        headers={'email': 'non_existed_register@agh.edu.pl'}
     ).status_code == 403
 
     data = {'name': 'admin_test', 'email': 'admin_test2@admin.agh.edu.pl',
             'password': 'admin_test', 'editorRequest': True}
-    assert requests.post(url_user, data=data).status_code == 200
+    assert requests.post(url_user, json=data).status_code == 200
 
     response = requests.get(
         url_user_editor,
-        cookies={'email': 'admin_test2@admin.agh.edu.pl'}
+        headers={'email': 'admin_test2@admin.agh.edu.pl'}
     )
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))
