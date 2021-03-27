@@ -5,10 +5,11 @@ from rest.db import db
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
 
+
 user_url = Blueprint('user', __name__)
 
 
-@user_url.route('/', methods=['POST'])
+@user_url.route('', methods=['POST', 'OPTIONS'])
 def register():
     """
     Try to add new user to database
@@ -18,10 +19,16 @@ def register():
         'password': given_password
     :return: registration success status and json of what went wrong if unsuccessful
     """
-    email = request.form.get('email')
-    name = request.form.get('name')
-    password = request.form.get('password')
-    editor_request = request.form.get('editorRequest') == 'True'
+    if request.method == 'OPTIONS':
+        response = Response(response=json.dumps({}), status=200, mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'content-type')
+        return response
+
+    email = request.json['email']
+    name = request.json['name']
+    password = request.json['password']
+    editor_request = request.json['editorRequest']
 
     data = {}
     if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', name) is None:
@@ -37,6 +44,8 @@ def register():
             status=400,
             mimetype='application/json'
         )
+
+        response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
     check_user = User.query.filter_by(email=email).first()
@@ -47,6 +56,7 @@ def register():
             status=409,
             mimetype='application/json'
         )
+        response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
     is_admin = email.endswith('@admin.agh.edu.pl')
@@ -65,18 +75,25 @@ def register():
         status=200,
         mimetype='application/json'
     )
+    response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
 
-@user_url.route('/auth', methods=['POST'])
+@user_url.route('/auth', methods=['POST', 'OPTIONS'])
 def login():
     """
     Try to login user+
     if status 200 returns json {'role': user_role} and sets response cookie - 'email': email
     :return: login success status and user role if successful
     """
-    email = request.form.get('email')
-    password = request.form.get('password')
+    if request.method == 'OPTIONS':
+        response = Response(response=json.dumps({}), status=200, mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'content-type')
+        return response
+
+    email = request.json['email']
+    password = request.json['password']
 
     user = User.query.filter_by(email=email).first()
 
@@ -99,13 +116,19 @@ def login():
         status=status,
         mimetype='application/json'
     )
+    response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+    response.headers.add('Vary', 'Origin')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+
     if status == 200:
         response.set_cookie('email', value=email)
 
     return response
 
 
-@user_url.route('/editorRequests', methods=['GET', 'POST'])
+@user_url.route('/editorRequests', methods=['GET', 'POST', 'OPTIONS'])
 def admin_editor_requests():
     """
     Either get (GET) editor requests or give (POST) user editor status
@@ -117,14 +140,24 @@ def admin_editor_requests():
         ]
     :return: success status and json editor requests (if GET)
     """
+    if request.method == 'OPTIONS':
+        response = Response(response=json.dumps({}), status=200, mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'content-type')
+        return response
+
     if 'email' not in request.cookies:
-        return Response(response=json.dumps({}), status=401, mimetype='application/json')
+        response = Response(response=json.dumps({}), status=401, mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        return response
 
     email = request.cookies.get('email')
     user = User.query.filter_by(email=email).first()
 
     if not user or not email.endswith('@admin.agh.edu.pl'):
-        return Response(response=json.dumps({}), status=403, mimetype='application/json')
+        response = Response(response=json.dumps({}), status=403, mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        return response
 
     if request.method == 'POST':
         email = request.form.get('email')
@@ -143,9 +176,13 @@ def admin_editor_requests():
 
             status = 200
 
-        return Response(response=json.dumps({}), status=status, mimetype='application/json')
+        response = Response(response=json.dumps({}), status=status, mimetype='application/json')
+        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        return response
 
     editor_requests = EditorRequest.query.all()
     data = [{'name': u.name, 'email': u.user_email} for u in editor_requests]
 
-    return Response(response=json.dumps(data), status=200, mimetype='application/json')
+    response = Response(response=json.dumps(data), status=200, mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+    return response
