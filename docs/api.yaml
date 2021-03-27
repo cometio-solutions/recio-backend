@@ -8,6 +8,10 @@ tags:
   description: Operations about user
 schemes:
   - http
+securityDefinitions:
+  adminAuth:
+    type: apiKey
+    name: email
 paths:
   /:
     get:
@@ -49,7 +53,7 @@ paths:
     post:
       tags:
       - user
-      summary: Logs user into the system
+      summary: Logs user into the system (if 200 returns email as a cookie)
       consumes:
         - application/json
       produces:
@@ -66,13 +70,18 @@ paths:
           description: authenticated
           schema:
             $ref: '#/definitions/UserRole'
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+                example: email=example@agh.edu.pl; Path=/
         400:
           description: invalid email or password
   /user/editorRequests:
     get:
       tags:
       - user
-      summary: Returns editor requests made by users. Available only for admin.
+      summary: Returns editor requests made by users. Available only for admin. Needs 'email' field in cookies.
       consumes:
         - application/json
       produces:
@@ -88,10 +97,12 @@ paths:
           description: user is unauthenticated
         403:
           description: only admin have access to that
+      security:
+        - adminAuth: []
     post:
       tags:
         - user
-      summary: changes user role to editor
+      summary: Chenges role from 'user' to 'editor'. Needs 'email' field in cookies.
       consumes:
         - application/json
       produces:
@@ -112,6 +123,8 @@ paths:
           description: only admin have access to that
         409:
           description: invalid user information
+      security:
+          - adminAuth: []
 
         
 definitions:

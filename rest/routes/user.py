@@ -21,7 +21,7 @@ def register():
     """
     if request.method == 'OPTIONS':
         response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
         response.headers.add('Access-Control-Allow-Headers', 'content-type')
         return response
 
@@ -39,23 +39,14 @@ def register():
         data['password'] = password
 
     if len(data) > 0:
-        response = Response(
-            response=json.dumps(data),
-            status=400,
-            mimetype='application/json'
-        )
-
+        response = Response(response=json.dumps(data), status=400, mimetype='application/json')
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
     check_user = User.query.filter_by(email=email).first()
 
     if check_user:
-        response = Response(
-            response=json.dumps({}),
-            status=409,
-            mimetype='application/json'
-        )
+        response = Response(response=json.dumps({}), status=409, mimetype='application/json')
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
 
@@ -70,11 +61,7 @@ def register():
 
     db.session.commit()
 
-    response = Response(
-        response=json.dumps({}),
-        status=200,
-        mimetype='application/json'
-    )
+    response = Response(response=json.dumps({}), status=200, mimetype='application/json')
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
@@ -111,13 +98,8 @@ def login():
         data = {}
         status = 400
 
-    response = Response(
-        response=json.dumps(data),
-        status=status,
-        mimetype='application/json'
-    )
+    response = Response(response=json.dumps(data), status=status, mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
-    response.headers.add('Vary', 'Origin')
     response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
     response.headers.add('Access-Control-Allow-Credentials', 'true')
@@ -142,16 +124,16 @@ def admin_editor_requests():
     """
     if request.method == 'OPTIONS':
         response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'content-type')
+        response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
+        response.headers.add('Access-Control-Allow-Headers', 'email, content-type')
         return response
 
-    if 'email' not in request.cookies:
+    if 'email' not in request.headers:
         response = Response(response=json.dumps({}), status=401, mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', request.headers['origin'])
         return response
 
-    email = request.cookies.get('email')
+    email = request.headers['email']
     user = User.query.filter_by(email=email).first()
 
     if not user or not email.endswith('@admin.agh.edu.pl'):
@@ -160,8 +142,8 @@ def admin_editor_requests():
         return response
 
     if request.method == 'POST':
-        email = request.form.get('email')
-        name = request.form.get('name')
+        email = request.json['email']
+        name = request.json['name']
 
         check_user = User.query.filter_by(email=email).first()
         check_editor_request = EditorRequest.query.filter_by(user_email=email).first()
