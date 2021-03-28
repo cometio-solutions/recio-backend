@@ -39,4 +39,3 @@ jobs:
     - stage: build
       if: type = push
       script: docker-compose up -d
-      script: pytest tests
