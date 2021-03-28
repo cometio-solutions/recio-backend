@@ -2,7 +2,7 @@ language: python
 python: "3.9"
 
 env:
-  - DOCKER_COMPOSE_VERSION=1.4.2
+  - DOCKER_COMPOSE_VERSION=1.8.0
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
@@ -30,13 +30,13 @@ jobs:
       script: pytest --flake8 --pylint --ignore=tests 
     - stage: build
       if: type = pull_request
-      script: docker-compose up
-    - stage: tet
+      script: docker-compose up -d
+    - stage: test
       if: type = pull_request
-      script: docker-compose up
+      script: docker-compose up -d
       script: pytest tests
 
     - stage: build
       if: type = push
-      script: docker-compose up
+      script: docker-compose up -d
       script: pytest tests
