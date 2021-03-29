@@ -1,3 +1,5 @@
+"""This module contains endpoints connected with users"""
+import json
 import re
 from datetime import datetime, timedelta
 import jwt

@@ -1,13 +1,22 @@
+"""This module stores Candidate model"""
 import enum
 from rest.db import db
 
 
 class Mode(enum.Enum):
+    """
+    There are two two types of studies mode:
+    FULL_TIME and PART_TIME
+    """
     FULL_TIME = "FULL_TIME"
     PART_TIME = "PART_TIME"
 
 
 class Candidate(db.Model):
+    """
+    This class coresponds to candidate table in database.
+    It describes a candidate to college.
+    """
     __tablename__ = 'candidate'
     pesel = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)

@@ -1,3 +1,4 @@
+"""Entrypoint for recio app"""
 import json
 from rest.app import create_app, setup_database
 
@@ -8,6 +9,10 @@ setup_database(app)
 
 @app.route('/')
 def hello():
+    """
+    An Example endpoint.
+    :returns: response with {app: recio} and status 200
+    """
     data = {"app": "recio"}
     response = app.response_class(
         response=json.dumps(data),

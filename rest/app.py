@@ -1,3 +1,4 @@
+"""This module creates recio app and setups database"""
 from datetime import datetime
 import os
 from flask import Flask
@@ -13,6 +14,10 @@ from rest.routes.user import user_url
 
 
 def create_app():
+    """
+    This method creates flask app, sets config and conects to database
+    :returns: created flask app
+    """
     app = Flask(__name__)
     app.register_blueprint(user_url, url_prefix='/user')
     app.config['SECRET_KEY'] = os.urandom(24)
@@ -27,6 +32,11 @@ def create_app():
 
 
 def setup_database(app):
+    """
+    This method setups database.
+    First all tables are droped and then new ones are created.
+    At the end some example data are added into database
+    """
     with app.app_context():
         db.drop_all()
         db.create_all()

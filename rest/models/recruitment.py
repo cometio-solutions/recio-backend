@@ -1,7 +1,12 @@
+"""This module stores Recruitment model"""
 from rest.db import db
 
 
 class Recruitment(db.Model):
+    """
+    This class coresponds to recruitment table in database.
+    It stores data about recruitment for given major
+    """
     __tablename__ = 'recruitment'
     id = db.Column(db.Integer, primary_key=True)
     major_id = db.Column(db.Integer, db.ForeignKey('major.id'),

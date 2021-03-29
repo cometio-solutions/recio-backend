@@ -1,8 +1,13 @@
+"""This module stores User model"""
 from werkzeug.security import generate_password_hash, check_password_hash
 from rest.db import db
 
 
 class User(db.Model):
+    """
+    This class coresponds to user table in database.
+    It stores data about user of our app
+    """
     __tablename__ = 'user'
     email = db.Column(db.String(30), primary_key=True)
     name = db.Column(db.String(30))

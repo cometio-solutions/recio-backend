@@ -1,18 +1,23 @@
+"""This module stores Major model"""
 import enum
+from rest.models.candidate import Mode
 from rest.db import db
 
 
 class Degree(enum.Enum):
+    """
+    There are two types of studies:
+    BACHELOR or MASTER
+    """
     BACHELOR = "BACHELOR"
     MASTER = "MASTER"
 
 
-class Mode(enum.Enum):
-    FULL_TIME = "FULL_TIME"
-    PART_TIME = "PART_TIME"
-
-
 class Major(db.Model):
+    """
+    This class coresponds to major table in database.
+    It describes a major (field of study) in which the candidate can be recruited
+    """
     __tablename__ = 'major'
     id = db.Column(db.Integer, primary_key=True)
     faculty = db.Column(db.String(30), nullable=False)
