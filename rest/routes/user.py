@@ -94,15 +94,15 @@ def login():
         else:
             role = 'user'
 
-        # data = {'role': role}
-        access_token = jwt.encode({
+        token = jwt.encode({
             'exp': datetime.utcnow() + timedelta(minutes=30),
             'iat': datetime.utcnow(),
             'email': email
         }, 'secret', algorithm='HS256')
+
         data = {
             'role': role,
-            'access_token': access_token
+            'token': token
         }
         status = 200
     else:
@@ -111,12 +111,6 @@ def login():
 
     response = Response(response=json.dumps(data), status=status, mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
-    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
-    # response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
-    # response.headers.add('Access-Control-Allow-Credentials', 'true')
-
-    # if status == 200:
-    #     response.set_cookie('email', value=email)
 
     return response
 
@@ -136,30 +130,24 @@ def admin_editor_requests():
     if request.method == 'OPTIONS':
         response = Response(response=json.dumps({}), status=200, mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'access_token')
+        response.headers.add('Access-Control-Allow-Headers', 'content-type, token')
         return response
 
-    # if 'email' not in request.headers:
-    #     response = Response(response=json.dumps({}), status=401, mimetype='application/json')
-    #     response.headers.add('Access-Control-Allow-Origin', '*')
-    #     return response
-
-    if 'access_token' not in request.headers:
-        response = Response(response=json.dumps({'message': 'No token found!'},
-                                                status=401, mimetype='application/json'))
+    if 'token' not in request.headers:
+        data = {'message': 'No token found, log in!'}
+        response = Response(response=json.dumps(data), status=401, mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
     try:
-        access_token = jwt.decode(request.headers['access_token'], 'secret', algorithms='HS256')
+        token = jwt.decode(request.headers['token'], 'secret', algorithms='HS256')
     except jwt.ExpiredSignatureError:
-        response = Response(response=json.dumps({'message': 'Token expired, log in again!'},
-                                                status=401, mimetype='application/json'))
+        data = {'message': 'Token expired, log in again!'}
+        response = Response(response=json.dumps(data), status=401, mimetype='application/json')
         response.headers.add('Access-Control-Allow-Origin', '*')
         return response
 
-    # email = request.headers['email']
-    email = access_token['email']
+    email = token['email']
     user = User.query.filter_by(email=email).first()
 
     if not user or not email.endswith('@admin.agh.edu.pl'):

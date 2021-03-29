@@ -9,12 +9,10 @@ tags:
 schemes:
   - http
 securityDefinitions:
-#  adminAuth:
-#    type: apiKey
-#    name: email
   JWT:
     type: apiKey
-    name: access_token
+    in: header
+    name: token
 paths:
   /:
     get:
@@ -56,7 +54,7 @@ paths:
     post:
       tags:
       - user
-      summary: Logs user into the system (if 200 returns email as a cookie)
+      summary: Logs user into the system
       consumes:
         - application/json
       produces:
@@ -72,14 +70,14 @@ paths:
         200:
           description: authenticated
           schema:
-            $ref: '#/definitions/UserRole'
+            $ref: '#/definitions/LoginOutput'
         400:
           description: invalid email or password
   /user/editorRequests:
     get:
       tags:
       - user
-      summary: Returns editor requests made by users. Available only for admin. Needs 'email' field in headers.
+      summary: Returns editor requests made by users. Available only for admin. Needs 'token' field in headers.
       consumes:
         - application/json
       produces:
@@ -100,7 +98,7 @@ paths:
     post:
       tags:
         - user
-      summary: Chenges role from 'user' to 'editor'. Needs 'email' field in headers.
+      summary: Changes role from 'user' to 'editor'. Needs 'token' field in headers.
       consumes:
         - application/json
       produces:
@@ -153,11 +151,14 @@ definitions:
         type: string
       email:
         type: string
-  UserRole:
+  LoginOutput:
     type: object
     properties:
       role:
         description: either 'user', 'editor' or 'admin'
+        type: string
+      token:
+        description: Returned hashed JWT token
         type: string
   InvalidRegisterInput:
     type: object
