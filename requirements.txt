@@ -3,3 +3,4 @@ pytest
 requests
 pymysql
 flask-sqlalchemy
+pyjwt

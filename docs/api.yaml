@@ -9,9 +9,12 @@ tags:
 schemes:
   - http
 securityDefinitions:
-  adminAuth:
+#  adminAuth:
+#    type: apiKey
+#    name: email
+  JWT:
     type: apiKey
-    name: email
+    name: access_token
 paths:
   /:
     get:
@@ -70,11 +73,6 @@ paths:
           description: authenticated
           schema:
             $ref: '#/definitions/UserRole'
-          headers:
-            Set-Cookie:
-              schema:
-                type: string
-                example: email=example@agh.edu.pl; Path=/
         400:
           description: invalid email or password
   /user/editorRequests:
@@ -98,7 +96,7 @@ paths:
         403:
           description: only admin have access to that
       security:
-        - adminAuth: []
+        - JWT: []
     post:
       tags:
         - user
@@ -124,7 +122,7 @@ paths:
         409:
           description: invalid user information
       security:
-          - adminAuth: []
+          - JWT: []
 
         
 definitions:
