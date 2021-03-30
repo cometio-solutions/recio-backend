@@ -91,6 +91,8 @@ paths:
               $ref: '#/definitions/EditorRequest'
         401:
           description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
         403:
           description: only admin have access to that
       security:
@@ -115,6 +117,8 @@ paths:
           description: Role changed to editor
         401:
           description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
         403:
           description: only admin have access to that
         409:
@@ -171,4 +175,10 @@ definitions:
         type: string
       password:
         description: provided password is invalid (optional)
+        type: string
+  TokenError:
+    type: object
+    properties:
+      message:
+        desciption: what went wrong with token authentication
         type: string

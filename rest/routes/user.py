@@ -1,11 +1,11 @@
-import json
 import re
 import jwt
 from datetime import datetime, timedelta
-from flask import request, Blueprint, Response
+from flask import request, Blueprint, current_app
 from rest.db import db
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
+from rest.common.response import create_response
 
 
 user_url = Blueprint('user', __name__)
@@ -22,10 +22,7 @@ def register():
     :return: registration success status and json of what went wrong if unsuccessful
     """
     if request.method == 'OPTIONS':
-        response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'content-type')
-        return response
+        return create_response({}, 200, '*', 'content-type')
 
     email = request.json['email']
     name = request.json['name']
@@ -41,16 +38,12 @@ def register():
         data['password'] = password
 
     if len(data) > 0:
-        response = Response(response=json.dumps(data), status=400, mimetype='application/json')
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response
+        return create_response(data, 400, '*')
 
     check_user = User.query.filter_by(email=email).first()
 
     if check_user:
-        response = Response(response=json.dumps({}), status=409, mimetype='application/json')
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response
+        return create_response({}, 409, '*')
 
     is_admin = email.endswith('@admin.agh.edu.pl')
 
@@ -63,9 +56,7 @@ def register():
 
     db.session.commit()
 
-    response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    return create_response({}, 200, '*')
 
 
 @user_url.route('/auth', methods=['POST', 'OPTIONS'])
@@ -76,10 +67,7 @@ def login():
     :return: login success status and user role if successful
     """
     if request.method == 'OPTIONS':
-        response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'content-type')
-        return response
+        return create_response({}, 200, '*', 'content-type')
 
     email = request.json['email']
     password = request.json['password']
@@ -97,8 +85,8 @@ def login():
         token = jwt.encode({
             'exp': datetime.utcnow() + timedelta(minutes=30),
             'iat': datetime.utcnow(),
-            'email': email
-        }, 'secret', algorithm='HS256')
+            'role': role
+        }, current_app.config['SECRET_KEY'], algorithm='HS256')
 
         data = {
             'role': role,
@@ -109,10 +97,7 @@ def login():
         data = {}
         status = 400
 
-    response = Response(response=json.dumps(data), status=status, mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', '*')
-
-    return response
+    return create_response(data, status, '*')
 
 
 @user_url.route('/editorRequests', methods=['GET', 'POST', 'OPTIONS'])
@@ -128,32 +113,26 @@ def admin_editor_requests():
     :return: success status and json editor requests (if GET)
     """
     if request.method == 'OPTIONS':
-        response = Response(response=json.dumps({}), status=200, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'content-type, token')
-        return response
+        return create_response({}, 200, '*', 'content-type, token')
 
     if 'token' not in request.headers:
-        data = {'message': 'No token found, log in!'}
-        response = Response(response=json.dumps(data), status=401, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return create_response({'message': 'No token found, log in!'}, 401, '*')
 
     try:
-        token = jwt.decode(request.headers['token'], 'secret', algorithms='HS256')
+        token = jwt.decode(
+            request.headers['token'],
+            current_app.config['SECRET_KEY'],
+            algorithms='HS256'
+        )
     except jwt.ExpiredSignatureError:
-        data = {'message': 'Token expired, log in again!'}
-        response = Response(response=json.dumps(data), status=401, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return create_response({'message': 'Token expired, log in again!'}, 401, '*')
+    except jwt.InvalidSignatureError:
+        return create_response({'message': 'Invalid token signature!'}, 401, '*')
 
-    email = token['email']
-    user = User.query.filter_by(email=email).first()
+    role = token['role']
 
-    if not user or not email.endswith('@admin.agh.edu.pl'):
-        response = Response(response=json.dumps({}), status=403, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+    if role != 'admin':
+        return create_response({}, 403, '*')
 
     if request.method == 'POST':
         email = request.json['email']
@@ -172,13 +151,9 @@ def admin_editor_requests():
 
             status = 200
 
-        response = Response(response=json.dumps({}), status=status, mimetype='application/json')
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        return response
+        return create_response({}, status, '*')
 
     editor_requests = EditorRequest.query.all()
     data = [{'name': u.name, 'email': u.user_email} for u in editor_requests]
 
-    response = Response(response=json.dumps(data), status=200, mimetype='application/json')
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return create_response(data, 200, '*')
