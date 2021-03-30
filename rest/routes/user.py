@@ -11,6 +11,18 @@ from rest.common.response import create_response
 user_url = Blueprint('user', __name__)
 
 
+@user_url.before_request
+def handle_options():
+    """
+    Handles OPTIONS method for all user routes.
+    :return: flask Response object with status 200 if the method is OPTIONS, else None
+    """
+    headers = 'content-type, token' if '/editorRequests' in request.path else 'content-type'
+
+    if request.method == 'OPTIONS':
+        return create_response({}, 200, '*', headers)
+
+
 @user_url.route('', methods=['POST', 'OPTIONS'])
 def register():
     """
@@ -21,9 +33,6 @@ def register():
         'password': given_password
     :return: registration success status and json of what went wrong if unsuccessful
     """
-    if request.method == 'OPTIONS':
-        return create_response({}, 200, '*', 'content-type')
-
     email = request.json['email']
     name = request.json['name']
     password = request.json['password']
@@ -66,9 +75,6 @@ def login():
     if status 200 returns json {'role': user_role} and sets response cookie - 'email': email
     :return: login success status and user role if successful
     """
-    if request.method == 'OPTIONS':
-        return create_response({}, 200, '*', 'content-type')
-
     email = request.json['email']
     password = request.json['password']
 
@@ -112,9 +118,6 @@ def admin_editor_requests():
         ]
     :return: success status and json editor requests (if GET)
     """
-    if request.method == 'OPTIONS':
-        return create_response({}, 200, '*', 'content-type, token')
-
     if 'token' not in request.headers:
         return create_response({'message': 'No token found, log in!'}, 401, '*')
 
