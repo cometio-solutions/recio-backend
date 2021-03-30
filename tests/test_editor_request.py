@@ -9,6 +9,7 @@ def test_admin_editor_request():
     :return: None
     """
     url_user = 'http://127.0.0.1:5000/user'
+    url_user_auth = 'http://127.0.0.1:5000/user/auth'
     url_user_editor = 'http://127.0.0.1:5000/user/editorRequests'
 
     data = {'name': 'proper_name', 'email': 'register_req@test.agh.edu.pl',
@@ -17,23 +18,26 @@ def test_admin_editor_request():
 
     assert requests.get(url_user_editor).status_code == 401
 
-    assert requests.get(
-        url_user_editor,
-        headers={'email': 'register_req@test.agh.edu.pl'}
-    ).status_code == 403
+    data = {'email': 'register_req@test.agh.edu.pl', 'password': '12345'}
+    response = requests.post(url_user_auth, json=data)
+    non_admin_login = json.loads(response.content.decode('utf-8'))
 
     assert requests.get(
         url_user_editor,
-        headers={'email': 'non_existed_register@agh.edu.pl'}
+        headers={'token': non_admin_login['token']}
     ).status_code == 403
 
     data = {'name': 'admin_test', 'email': 'admin_test2@admin.agh.edu.pl',
             'password': 'admin_test', 'editorRequest': True}
     assert requests.post(url_user, json=data).status_code == 200
 
+    data = {'email': 'admin_test2@admin.agh.edu.pl', 'password': 'admin_test'}
+    response = requests.post(url_user_auth, json=data)
+    admin_login = json.loads(response.content.decode('utf-8'))
+
     response = requests.get(
         url_user_editor,
-        headers={'email': 'admin_test2@admin.agh.edu.pl'}
+        headers={'token': admin_login['token']}
     )
     assert response.status_code == 200
     data = json.loads(response.content.decode('utf-8'))

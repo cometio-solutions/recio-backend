@@ -1,6 +1,6 @@
 import re
-import jwt
 from datetime import datetime, timedelta
+import jwt
 from flask import request, Blueprint, current_app
 from rest.db import db
 from rest.models.user import User
@@ -21,6 +21,8 @@ def handle_options():
 
     if request.method == 'OPTIONS':
         return create_response({}, 200, '*', headers)
+
+    return None
 
 
 @user_url.route('', methods=['POST', 'OPTIONS'])

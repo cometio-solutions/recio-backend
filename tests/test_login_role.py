@@ -26,11 +26,15 @@ def test_login_role():
             'password': 'admin_test', 'editorRequest': False}
     assert requests.post(url_user, json=data).status_code == 200
 
+    data = {'email': 'admin_test@admin.agh.edu.pl', 'password': 'admin_test'}
+    response = requests.post(url_user_auth, json=data)
+    admin_login = json.loads(response.content.decode('utf-8'))
+
     data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl'}
     response = requests.post(
         url_user_editor,
         json=data,
-        headers={'email': 'admin_test@admin.agh.edu.pl'}
+        headers={'token': admin_login['token']}
     )
     assert response.status_code == 200
 
