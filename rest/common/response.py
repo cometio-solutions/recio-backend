@@ -8,10 +8,10 @@ def create_response(data, status, origin=None, headers=None):
     Create and return flask Response object with given attributes.
     Should be used especially if headers are needed to make less code.
 
-    :param data: information you want to send in json format
+    :param data: information that will be turned to json and sent
     :param status: response status (e.g. 200, 400, 401)
-    :param origin: set Access-Control-Allow-Origin header in response, needed for CORS
-    :param headers: set Access-Control-Allow-Headers header in response, needed for CORS
+    :param origin: string to set Access-Control-Allow-Origin header in response, needed for CORS
+    :param headers: string to set Access-Control-Allow-Headers header in response, needed for CORS
     :return: flask Response object
     """
     response = Response(response=json.dumps(data), status=status, mimetype='application/json')
