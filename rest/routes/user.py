@@ -6,6 +6,7 @@ from rest.db import db
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
 from rest.common.response import create_response
+from rest.common.token import handle_request_token
 
 
 user_url = Blueprint('user', __name__)
@@ -82,7 +83,7 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-    if user and user.password == password:
+    if user and user.verify_password(password):
         if user.email.endswith('@admin.agh.edu.pl'):
             role = 'admin'
         elif user.is_editor:
@@ -120,21 +121,10 @@ def admin_editor_requests():
         ]
     :return: success status and json editor requests (if GET)
     """
-    if 'token' not in request.headers:
-        return create_response({'message': 'No token found, log in!'}, 401, '*')
+    role, response = handle_request_token(request)
 
-    try:
-        token = jwt.decode(
-            request.headers['token'],
-            current_app.config['SECRET_KEY'],
-            algorithms='HS256'
-        )
-    except jwt.ExpiredSignatureError:
-        return create_response({'message': 'Token expired, log in again!'}, 401, '*')
-    except jwt.InvalidSignatureError:
-        return create_response({'message': 'Invalid token signature!'}, 401, '*')
-
-    role = token['role']
+    if role is None:
+        return response
 
     if role != 'admin':
         return create_response({}, 403, '*')
