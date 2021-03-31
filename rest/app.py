@@ -15,6 +15,7 @@ from rest.routes.user import user_url
 def create_app():
     app = Flask(__name__)
     app.register_blueprint(user_url, url_prefix='/user')
+    app.config['SECRET_KEY'] = os.urandom(24)
     app.config['CORS_HEADERS'] = 'Content-Type'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql+pymysql://{os.environ["USER"]}:' \

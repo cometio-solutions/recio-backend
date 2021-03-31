@@ -8,6 +8,11 @@ tags:
   description: Operations about user
 schemes:
   - http
+securityDefinitions:
+  JWT:
+    type: apiKey
+    in: header
+    name: token
 paths:
   /:
     get:
@@ -65,14 +70,14 @@ paths:
         200:
           description: authenticated
           schema:
-            $ref: '#/definitions/UserRole'
+            $ref: '#/definitions/LoginOutput'
         400:
           description: invalid email or password
   /user/editorRequests:
     get:
       tags:
       - user
-      summary: Returns editor requests made by users. Available only for admin.
+      summary: Returns editor requests made by users. Available only for admin. Needs 'token' field in headers.
       consumes:
         - application/json
       produces:
@@ -86,12 +91,16 @@ paths:
               $ref: '#/definitions/EditorRequest'
         401:
           description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
         403:
           description: only admin have access to that
+      security:
+        - JWT: []
     post:
       tags:
         - user
-      summary: changes user role to editor
+      summary: Changes role from 'user' to 'editor'. Needs 'token' field in headers.
       consumes:
         - application/json
       produces:
@@ -108,10 +117,14 @@ paths:
           description: Role changed to editor
         401:
           description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
         403:
           description: only admin have access to that
         409:
           description: invalid user information
+      security:
+          - JWT: []
 
         
 definitions:
@@ -142,11 +155,14 @@ definitions:
         type: string
       email:
         type: string
-  UserRole:
+  LoginOutput:
     type: object
     properties:
       role:
         description: either 'user', 'editor' or 'admin'
+        type: string
+      token:
+        description: Returned hashed JWT token
         type: string
   InvalidRegisterInput:
     type: object
@@ -159,4 +175,10 @@ definitions:
         type: string
       password:
         description: provided password is invalid (optional)
+        type: string
+  TokenError:
+    type: object
+    properties:
+      message:
+        desciption: what went wrong with token authentication
         type: string

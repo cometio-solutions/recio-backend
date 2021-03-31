@@ -1,14 +1,32 @@
-import json
 import re
-from flask import request, Blueprint, Response
+from datetime import datetime, timedelta
+import jwt
+from flask import request, Blueprint, current_app
 from rest.db import db
 from rest.models.user import User
 from rest.models.editor_request import EditorRequest
+from rest.common.response import create_response
+from rest.common.token import handle_request_token
+
 
 user_url = Blueprint('user', __name__)
 
 
-@user_url.route('/', methods=['POST'])
+@user_url.before_request
+def handle_options():
+    """
+    Handles OPTIONS method for all user routes.
+    :return: flask Response object with status 200 if the method is OPTIONS, else None
+    """
+    headers = 'content-type, token' if '/editorRequests' in request.path else 'content-type'
+
+    if request.method == 'OPTIONS':
+        return create_response({}, 200, '*', headers)
+
+    return None
+
+
+@user_url.route('', methods=['POST', 'OPTIONS'])
 def register():
     """
     Try to add new user to database
@@ -18,10 +36,10 @@ def register():
         'password': given_password
     :return: registration success status and json of what went wrong if unsuccessful
     """
-    email = request.form.get('email')
-    name = request.form.get('name')
-    password = request.form.get('password')
-    editor_request = request.form.get('editorRequest') == 'True'
+    email = request.json['email']
+    name = request.json['name']
+    password = request.json['password']
+    editor_request = request.json['editorRequest']
 
     data = {}
     if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', name) is None:
@@ -32,22 +50,12 @@ def register():
         data['password'] = password
 
     if len(data) > 0:
-        response = Response(
-            response=json.dumps(data),
-            status=400,
-            mimetype='application/json'
-        )
-        return response
+        return create_response(data, 400, '*')
 
     check_user = User.query.filter_by(email=email).first()
 
     if check_user:
-        response = Response(
-            response=json.dumps({}),
-            status=409,
-            mimetype='application/json'
-        )
-        return response
+        return create_response({}, 409, '*')
 
     is_admin = email.endswith('@admin.agh.edu.pl')
 
@@ -60,27 +68,22 @@ def register():
 
     db.session.commit()
 
-    response = Response(
-        response=json.dumps({}),
-        status=200,
-        mimetype='application/json'
-    )
-    return response
+    return create_response({}, 200, '*')
 
 
-@user_url.route('/auth', methods=['POST'])
+@user_url.route('/auth', methods=['POST', 'OPTIONS'])
 def login():
     """
     Try to login user+
     if status 200 returns json {'role': user_role} and sets response cookie - 'email': email
     :return: login success status and user role if successful
     """
-    email = request.form.get('email')
-    password = request.form.get('password')
+    email = request.json['email']
+    password = request.json['password']
 
     user = User.query.filter_by(email=email).first()
 
-    if user and user.password == password:
+    if user and user.verify_password(password):
         if user.email.endswith('@admin.agh.edu.pl'):
             role = 'admin'
         elif user.is_editor:
@@ -88,24 +91,25 @@ def login():
         else:
             role = 'user'
 
-        data = {'role': role}
+        token = jwt.encode({
+            'exp': datetime.utcnow() + timedelta(minutes=30),
+            'iat': datetime.utcnow(),
+            'role': role
+        }, current_app.config['SECRET_KEY'], algorithm='HS256')
+
+        data = {
+            'role': role,
+            'token': token
+        }
         status = 200
     else:
         data = {}
         status = 400
 
-    response = Response(
-        response=json.dumps(data),
-        status=status,
-        mimetype='application/json'
-    )
-    if status == 200:
-        response.set_cookie('email', value=email)
-
-    return response
+    return create_response(data, status, '*')
 
 
-@user_url.route('/editorRequests', methods=['GET', 'POST'])
+@user_url.route('/editorRequests', methods=['GET', 'POST', 'OPTIONS'])
 def admin_editor_requests():
     """
     Either get (GET) editor requests or give (POST) user editor status
@@ -117,18 +121,17 @@ def admin_editor_requests():
         ]
     :return: success status and json editor requests (if GET)
     """
-    if 'email' not in request.cookies:
-        return Response(response=json.dumps({}), status=401, mimetype='application/json')
+    role, response = handle_request_token(request)
 
-    email = request.cookies.get('email')
-    user = User.query.filter_by(email=email).first()
+    if role is None:
+        return response
 
-    if not user or not email.endswith('@admin.agh.edu.pl'):
-        return Response(response=json.dumps({}), status=403, mimetype='application/json')
+    if role != 'admin':
+        return create_response({}, 403, '*')
 
     if request.method == 'POST':
-        email = request.form.get('email')
-        name = request.form.get('name')
+        email = request.json['email']
+        name = request.json['name']
 
         check_user = User.query.filter_by(email=email).first()
         check_editor_request = EditorRequest.query.filter_by(user_email=email).first()
@@ -143,9 +146,9 @@ def admin_editor_requests():
 
             status = 200
 
-        return Response(response=json.dumps({}), status=status, mimetype='application/json')
+        return create_response({}, status, '*')
 
     editor_requests = EditorRequest.query.all()
     data = [{'name': u.name, 'email': u.user_email} for u in editor_requests]
 
-    return Response(response=json.dumps(data), status=200, mimetype='application/json')
+    return create_response(data, 200, '*')
