@@ -24,4 +24,9 @@ class User(db.Model):
         return f'<User(email={self.email}, name={self.name}, isEditor={self.is_editor})>'
 
     def verify_password(self, pwd):
+        """
+        Cheks if password matched with password hash in the database
+        :paran pwd: plaintext password to compare
+        :return: True if password matched, False otherwise
+        """
         return check_password_hash(self.password, pwd)
