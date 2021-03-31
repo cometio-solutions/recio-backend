@@ -16,7 +16,7 @@ class CandidateData():
     """Stores candidate data"""
     def __init__(self, recruitment_data):
         self.recruitment_data = recruitment_data
-        self.pesel = Pesel.generate()
+        self.pesel = str(Pesel.generate())
         self.name = faker.name()
         self.city = faker.city()
         self.region = faker.region()
@@ -26,9 +26,10 @@ class CandidateData():
         self.matura_date = faker.date_between_dates(date_start=datetime(2017,1,1),
                                                 date_end=recruitment_data.end_date)
         self.matura_result = random.randrange(100)
+        self.test_result = random.randrange(100)
         if recruitment_data.degree == "MASTER":
-            self.graduation_date = faker.date_between_dates(date_start=self.matura_date,
-                                        date_end=recruitment_data.end_date)
+            self.graduation_date = str(faker.date_between_dates(date_start=self.matura_date,
+                                        date_end=recruitment_data.end_date))
             self.college_name = "University of " + faker.word()
             self.faculty = random.choice(FACULTIES)
             self.field_of_study = random.choice(MAJORS)
@@ -60,10 +61,11 @@ class CandidateData():
         candidate.highschool_city = other.highschool_city
         candidate.matura_date = other.matura_date
         candidate.matura_result = other.matura_result
+        candidate.test_result = random.randrange(100)
         if recruitment_data.degree == "MASTER" and other.recruitment_data.degree == 'BACHELOR':
-            candidate.graduation_date = faker.date_between_dates(
+            candidate.graduation_date = str(faker.date_between_dates(
                                         date_start=other.recruitment_data.end_date,
-                                        date_end=recruitment_data.end_date)
+                                        date_end=recruitment_data.end_date))
             candidate.college_name = "AGH University"
             candidate.faculty = other.recruitment_data.faculty
             candidate.field_of_study = other.recruitment_data.major_name
@@ -79,12 +81,19 @@ class CandidateData():
         return candidate
 
     def can_be_next_recruitment(self, recruitment):
+        """
+        Checks if candidate can take part in the next recruitment
+        :param recruitment: Possible next recruitment
+        :return: True if candidate can take part in the recruitment, False otherwise
+        """
         if recruitment.end_date < self.recruitment_data.end_date:
+            return False
+        if recruitment.degree == "BACHELOR" and self.recruitment_data.degree == "MASTER":
             return False
         return True
 
     def __iter__(self):
         return iter([self.pesel, self.name, self.city, self.region, self.country, self.highschool,
-                    self.highschool_city, self.matura_date, self.graduation_date,self.matura_result,
-                    self.college_name, self.faculty, self.field_of_study, self.mode, self.average]
-                    + list(self.recruitment_data))
+                    self.highschool_city, str(self.matura_date), self.graduation_date,
+                    self.matura_result, self.test_result, self.college_name, self.faculty,
+                    self.field_of_study,self.mode, self.average] + list(self.recruitment_data))

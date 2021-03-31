@@ -42,4 +42,4 @@ class RecruitmentData():
 
     def __iter__(self):
         return iter([ self.faculty, self.degree, self.major_name, self.mode,
-         self.end_date, self.cycle_number, self.slot_limit])
+         str(self.end_date), self.cycle_number, self.slot_limit])
