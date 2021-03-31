@@ -30,12 +30,10 @@ jobs:
       script: pytest --flake8 --pylint --ignore=tests 
     - stage: build
       if: type = pull_request
-      script: docker-compose up -d
+      script: docker-compose build
     - stage: test
       if: type = pull_request
-      script: docker-compose up -d
-      script: sleep 60
-      script: pytest tests
+      script: docker-compose up --build -d && sleep 60 && pytest tests
 
     - stage: build
       if: type = push
