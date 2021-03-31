@@ -34,6 +34,7 @@ jobs:
     - stage: test
       if: type = pull_request
       script: docker-compose up -d
+      script: sleep 60
       script: pytest tests
 
     - stage: build
