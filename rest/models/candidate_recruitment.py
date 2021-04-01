@@ -1,13 +1,21 @@
+"""This module stores Candidate Recruitment model"""
 import enum
 from rest.db import db
 
 
 class RecruitmenStatus(enum.Enum):
+    """
+    Candidate can be either QUALIFIED or NOT_QUALIFIED
+    """
     QUALIFIED = "QUALIFIED"
     NOT_QUALIFIED = "NOT_QUALIFIED"
 
 
 class CandidateRecruitment(db.Model):
+    """
+    This class coresponds to candidateRecruitment table in database.
+    It describes a candidate recruitment and stores data connected with recruitment proccess
+    """
     __tablename__ = 'candidateRecruitment'
     id = db.Column(db.Integer, primary_key=True)
     recruitment_id = db.Column(db.Integer, db.ForeignKey('recruitment.id'), nullable=False)
