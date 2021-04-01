@@ -1,19 +1,13 @@
 """This module generates random candidates data to be saved in csv/excel file"""
 import random
 from datetime import datetime
-from faker import Faker
+from utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
 from pesel import Pesel
-
-HIGHSCHOOL_TYPE = ["Liceum", "Technikum"]
-FACULTIES = ["WIET", "WEAIB", "WIMIC", "WIMIR", "WZ", "WIMIP"]
-DEGREE = ["BACHELOR", "MASTER"]
-MAJORS = open("field_of_studies").read().splitlines()
-MODE = ["PART-TIME", "FULL-TIME"]
-faker = Faker('pl_PL')
 
 
 class CandidateData():
     """Stores candidate data"""
+    # pylint: disable=too-many-instance-attributes
     def __init__(self, recruitment_data):
         self.recruitment_data = recruitment_data
         self.pesel = str(Pesel.generate())
@@ -23,13 +17,13 @@ class CandidateData():
         self.country = "Polska"
         self.highschool = random.choice(HIGHSCHOOL_TYPE) + " nr " + str(random.randrange(10) + 1)
         self.highschool_city = faker.city()
-        self.matura_date = faker.date_between_dates(date_start=datetime(2017,1,1),
-                                                date_end=recruitment_data.end_date)
+        self.matura_date = faker.date_between_dates(date_start=datetime(2017, 1, 1),
+                                                    date_end=recruitment_data.end_date)
         self.matura_result = random.randrange(100)
         self.test_result = random.randrange(100)
         if recruitment_data.degree == "MASTER":
             self.graduation_date = str(faker.date_between_dates(date_start=self.matura_date,
-                                        date_end=recruitment_data.end_date))
+                                                                date_end=recruitment_data.end_date))
             self.college_name = "University of " + faker.word()
             self.faculty = random.choice(FACULTIES)
             self.field_of_study = random.choice(MAJORS)
@@ -96,4 +90,4 @@ class CandidateData():
         return iter([self.pesel, self.name, self.city, self.region, self.country, self.highschool,
                     self.highschool_city, str(self.matura_date), self.graduation_date,
                     self.matura_result, self.test_result, self.college_name, self.faculty,
-                    self.field_of_study,self.mode, self.average] + list(self.recruitment_data))
+                    self.field_of_study, self.mode, self.average] + list(self.recruitment_data))
