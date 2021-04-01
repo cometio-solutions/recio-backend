@@ -26,7 +26,7 @@ class User(db.Model):
     def verify_password(self, pwd):
         """
         Cheks if password matched with password hash in the database
-        :paran pwd: plaintext password to compare
+        :param pwd: plaintext password to compare
         :return: True if password matched, False otherwise
         """
         return check_password_hash(self.password, pwd)
