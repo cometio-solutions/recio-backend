@@ -1,5 +1,6 @@
 """This module generates random candidates data to be saved in csv/excel file"""
 import random
+import copy
 from datetime import datetime
 from utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
 from pesel import Pesel
@@ -44,17 +45,8 @@ class CandidateData():
         :param other: Candidate data for previous recruitment
         :return: Candidate data for next recruitment
         """
-        candidate = cls.__new__(cls)
+        candidate = copy.deepcopy(other)
         candidate.recruitment_data = recruitment_data
-        candidate.pesel = other.pesel
-        candidate.name = other.name
-        candidate.city = other.city
-        candidate.region = other.region
-        candidate.country = other.country
-        candidate.highschool = other.highschool
-        candidate.highschool_city = other.highschool_city
-        candidate.matura_date = other.matura_date
-        candidate.matura_result = other.matura_result
         candidate.test_result = random.randrange(100)
         if recruitment_data.degree == "MASTER" and other.recruitment_data.degree == 'BACHELOR':
             candidate.graduation_date = str(faker.date_between_dates(
@@ -65,13 +57,6 @@ class CandidateData():
             candidate.field_of_study = other.recruitment_data.major_name
             candidate.mode = other.recruitment_data.mode
             candidate.average = random.uniform(2.0, 5.0)
-        else:
-            candidate.graduation_date = other.graduation_date
-            candidate.college_name = other.college_name
-            candidate.faculty = other.faculty
-            candidate.field_of_study = other.field_of_study
-            candidate.mode = other.mode
-            candidate.average = other.average
         return candidate
 
     def can_be_next_recruitment(self, recruitment):
@@ -86,8 +71,14 @@ class CandidateData():
             return False
         return True
 
-    def __iter__(self):
-        return iter([self.pesel, self.name, self.city, self.region, self.country, self.highschool,
-                    self.highschool_city, str(self.matura_date), self.graduation_date,
-                    self.matura_result, self.test_result, self.college_name, self.faculty,
-                    self.field_of_study, self.mode, self.average] + list(self.recruitment_data))
+    def get_dict(self):
+        """
+        Creates dict that is useful for writing Candidate data to csv/excel files
+        :return: dict of Candidate data objects
+        """
+        values = copy.deepcopy(self.__dict__)
+        values['matura_date'] = str(self.matura_date)
+        values.pop('recruitment_data')
+        recruitment_values = {"recruitment_" + str(key): val for key, val in
+                              self.recruitment_data.get_dict().items()}
+        return {**values, **recruitment_values}
