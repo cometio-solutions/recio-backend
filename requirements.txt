@@ -5,3 +5,6 @@ pymysql
 flask-sqlalchemy
 pyjwt
 werkzeug
+pesel
+xlsxwriter
+faker

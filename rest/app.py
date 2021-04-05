@@ -8,7 +8,6 @@ from rest.models.editor_request import EditorRequest
 from rest.models.major import Major
 from rest.models.recruitment import Recruitment
 from rest.models.candidate import Candidate
-from rest.models.matura_result import MaturaResult
 from rest.models.candidate_recruitment import CandidateRecruitment
 from rest.routes.user import user_url
 
@@ -56,5 +55,4 @@ def setup_database(app):
         print(Recruitment.query.all())
         print(EditorRequest.query.all())
         print(Candidate.query.all())
-        print(MaturaResult.query.all())
         print(CandidateRecruitment.query.all())

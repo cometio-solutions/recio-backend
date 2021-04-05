@@ -26,6 +26,7 @@ class Candidate(db.Model):
     highschool = db.Column(db.String(30), nullable=False)
     highschool_city = db.Column(db.String(30), nullable=False)
     matura_date = db.Column(db.DateTime, nullable=False)
+    matura_points = db.Column(db.Integer, nullable=False)
     graduation_date = db.Column(db.DateTime)
     college_name = db.Column(db.String(30))
     faculty = db.Column(db.String(30))
