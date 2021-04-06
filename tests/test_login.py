@@ -1,3 +1,4 @@
+"""Testing login POST"""
 import requests
 
 
@@ -11,7 +12,7 @@ def test_login():
     url_user_auth = 'http://127.0.0.1:5000/user/auth'
 
     data = {'name': 'proper_name', 'email': 'login@test.agh.edu.pl',
-            'password': '12345', 'editorRequest': True}
+            'password': '12345', 'editorRequest': False}
     assert requests.post(url_user, json=data).status_code == 200
 
     login_data = {'email': 'login@test.agh.edu.pl', 'password': '12345'}

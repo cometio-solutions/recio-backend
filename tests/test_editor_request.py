@@ -1,3 +1,4 @@
+"""Testing editor request GET (EditorRequest data)"""
 import json
 import requests
 
@@ -44,3 +45,10 @@ def test_admin_editor_request():
     assert len(data) == 1
     assert data[0]['name'] == 'proper_name'
     assert data[0]['email'] == 'register_req@test.agh.edu.pl'
+
+    data = {'name': 'proper_name', 'email': 'register_req@test.agh.edu.pl', 'approval': 'accept'}
+    requests.post(
+        url_user_editor,
+        json=data,
+        headers={'token': admin_login['token']}
+    )
