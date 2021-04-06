@@ -1,3 +1,4 @@
+"""Testing if login returns correct 'role' parameter"""
 import json
 import requests
 
@@ -30,13 +31,12 @@ def test_login_role():
     response = requests.post(url_user_auth, json=data)
     admin_login = json.loads(response.content.decode('utf-8'))
 
-    data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl'}
-    response = requests.post(
+    data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl', 'approval': 'accept'}
+    requests.post(
         url_user_editor,
         json=data,
         headers={'token': admin_login['token']}
     )
-    assert response.status_code == 200
 
     response = requests.post(url_user_auth, json=login_data)
     assert response.status_code == 200

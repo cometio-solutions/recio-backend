@@ -113,7 +113,7 @@ def login():
 @user_url.route('/editorRequests', methods=['GET', 'POST', 'OPTIONS'])
 def admin_editor_requests():
     """
-    Either get (GET) editor requests or give (POST) user editor status
+    Either get (GET) editor requests or handle (POST) editor request, accept or reject.
     Requires 'email' field in cookies.
     if method GET and status 200 returns json:
         list of [
@@ -133,15 +133,18 @@ def admin_editor_requests():
     if request.method == 'POST':
         email = request.json['email']
         name = request.json['name']
+        approval = request.json['approval']
 
         check_user = User.query.filter_by(email=email).first()
         check_editor_request = EditorRequest.query.filter_by(user_email=email).first()
 
         if not check_user or not check_editor_request or \
-                check_user.name != name or check_editor_request.name != name:
+                check_user.name != name or check_editor_request.name != name or \
+                approval not in ['accept', 'reject']:
             status = 409
         else:
-            check_user.is_editor = True
+            if approval == 'accept':
+                check_user.is_editor = True
             db.session.delete(check_editor_request)
             db.session.commit()
 

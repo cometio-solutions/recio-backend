@@ -1,3 +1,4 @@
+"""Testing changing editor status, but only with 'approve': 'accept'"""
 import json
 import requests
 
@@ -23,6 +24,7 @@ def test_changing_editor_status():
     response = requests.post(url_user_auth, json=data)
     non_admin_login = json.loads(response.content.decode('utf-8'))
 
+    data['approval'] = 'accept'
     assert requests.post(
         url_user_editor,
         data=data,
@@ -37,7 +39,7 @@ def test_changing_editor_status():
     response = requests.post(url_user_auth, json=data)
     admin_login = json.loads(response.content.decode('utf-8'))
 
-    data = {'name': 'proper_name', 'email': 'editor@test.agh.edu.pl'}
+    data = {'name': 'proper_name', 'email': 'editor@test.agh.edu.pl', 'approval': 'accept'}
     response = requests.post(
         url_user_editor,
         json=data,
@@ -52,7 +54,7 @@ def test_changing_editor_status():
     data = json.loads(response.content.decode('utf-8'))
     assert len(data) == 0
 
-    data = {'name': 'proper_name', 'email': 'invalid@test.agh.edu.pl'}
+    data = {'name': 'proper_name', 'email': 'invalid@test.agh.edu.pl', 'approval': 'accept'}
     response = requests.post(
         url_user_editor,
         json=data,

@@ -1,3 +1,4 @@
+"""Testing registration POST"""
 import requests
 
 
