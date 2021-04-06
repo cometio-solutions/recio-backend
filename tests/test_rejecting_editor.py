@@ -33,11 +33,12 @@ def test_rejecting_editor_request():
     ).status_code == 409
 
     data = {'email': 'reject_ed@test.agh.edu.pl', 'name': 'proper_name', 'approval': 'reject'}
-    assert requests.post(
+    response = requests.post(
         url_user_editor,
         json=data,
         headers={'token': admin_login['token']}
-    ).status_code == 200
+    )
+    assert response.status_code == 200
 
     response = requests.get(
         url_user_editor,
@@ -45,3 +46,8 @@ def test_rejecting_editor_request():
     )
     data = json.loads(response.content.decode('utf-8'))
     assert len(data) == 0
+
+    data = {'email': 'reject_ed@test.agh.edu.pl', 'password': '12345'}
+    response = requests.post(url_user_auth, json=data)
+    data = json.loads(response.content.decode('utf-8'))
+    assert data['role'] == 'user'

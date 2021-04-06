@@ -32,7 +32,7 @@ def test_login_role():
     admin_login = json.loads(response.content.decode('utf-8'))
 
     data = {'name': 'proper_name', 'email': 'login_role@test.agh.edu.pl', 'approval': 'accept'}
-    response = requests.post(
+    requests.post(
         url_user_editor,
         json=data,
         headers={'token': admin_login['token']}
