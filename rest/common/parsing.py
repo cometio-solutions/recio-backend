@@ -44,11 +44,12 @@ def check_document_type(columns_number):
     """
     if columns_number == 23:
         return 'C'
-    elif columns_number == 7:
+
+    if columns_number == 7:
         return 'R'
-    else:
-        raise ValueError("Import file must have 23 columns for candidates"
-                         "or 7 columns for recruitments!")
+
+    raise ValueError("Import file must have 23 columns for candidates"
+                     "or 7 columns for recruitments!")
 
 
 def handle_row(row, columns):
@@ -60,14 +61,14 @@ def handle_row(row, columns):
     :return: Dictionary with the candidate/recruitment data
     """
     single = {}
-    for i, c in enumerate(row):
-        if columns[i] == 'name' and c.split(' ')[0] in ['pan', 'pani']:
-            c = c[c.find(' ') + 1:]
+    for i, val in enumerate(row):
+        if columns[i] == 'name' and val.split(' ')[0] in ['pan', 'pani']:
+            val = val[val.find(' ') + 1:]
 
-        if isinstance(c, str) and len(c) == 0:
+        if isinstance(val, str) and len(val) == 0:
             single[columns[i]] = None
         else:
-            single[columns[i]] = c
+            single[columns[i]] = val
 
     return single
 
@@ -106,12 +107,12 @@ def parse_excel(file):
     data = []
     excel_file = xl.readxl(file)
 
-    for ws in excel_file.ws_names:
-        document_type = check_document_type(len(excel_file.ws(ws=ws).row(row=1)))
-        columns = excel_file.ws(ws=ws).row(row=1)
+    for worksheet in excel_file.ws_names:
+        document_type = check_document_type(len(excel_file.ws(ws=worksheet).row(row=1)))
+        columns = excel_file.ws(ws=worksheet).row(row=1)
         file_data = []
 
-        for i, row in enumerate(excel_file.ws(ws=ws).rows):
+        for i, row in enumerate(excel_file.ws(ws=worksheet).rows):
             if i != 0:
                 file_data.append(handle_row(row, columns))
 
