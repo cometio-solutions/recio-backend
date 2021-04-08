@@ -50,6 +50,8 @@ paths:
             $ref: '#/definitions/InvalidRegisterInput'
         409:
           description: given email is already taken
+          schema:
+            $ref: '#/definitions/ErrorMessage'
   /user/auth:
     post:
       tags:
@@ -73,6 +75,8 @@ paths:
             $ref: '#/definitions/LoginOutput'
         400:
           description: invalid email or password
+          schema:
+            $ref: '#/definitions/ErrorMessage'
   /user/editorRequests:
     get:
       tags:
@@ -95,6 +99,8 @@ paths:
             $ref: '#/definitions/TokenError'
         403:
           description: only admin have access to that
+          schema:
+            $ref: '#/definitions/ErrorMessage'
       security:
         - JWT: []
     post:
@@ -123,8 +129,12 @@ paths:
             $ref: '#/definitions/TokenError'
         403:
           description: only admin have access to that
+          schema:
+            $ref: '#/definitions/ErrorMessage'
         409:
           description: invalid user information or approval status
+          schema:
+            $ref: '#/definitions/ErrorMessage'
       security:
           - JWT: []
   /recruitment:
@@ -204,11 +214,20 @@ definitions:
       password:
         description: provided password is invalid (optional)
         type: string
+      error:
+        description: what went wrong with registration
+        type: string
   TokenError:
     type: object
     properties:
-      message:
+      error:
         desciption: what went wrong with token authentication
+        type: string
+  ErrorMessage:
+    type: object
+    properties:
+      error:
+        description: error containing message of what went wrong
         type: string
   GetAllRecruitmentData:
     type: object
@@ -252,5 +271,3 @@ definitions:
               major_mode:
                 description: Major mode Part time/Full time.
                 type: string
-
-

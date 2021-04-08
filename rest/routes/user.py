@@ -9,7 +9,6 @@ from rest.models.editor_request import EditorRequest
 from rest.common.response import create_response
 from rest.common.token import handle_request_token
 
-
 user_url = Blueprint('user', __name__)
 
 
@@ -43,20 +42,22 @@ def register():
     editor_request = request.json['editorRequest']
 
     data = {}
-    if len(name) < 3 or len(name) > 30 or re.match('^[.a-zA-Z0-9_-]+$', name) is None:
+    if len(name) < 3 or len(name) > 30 or \
+            re.match(r'^[ąĄćĆęĘłŁńŃóÓśŚźŹżŻ.a-zA-Z0-9 _-]+$', name) is None:
         data['name'] = name
-    if not email.endswith('agh.edu.pl') or re.match('^[.@a-zA-Z0-9_-]+$', email) is None:
+    if not email.endswith('agh.edu.pl') or re.match(r'^[.@a-zA-Z0-9_-]+$', email) is None:
         data['email'] = email
-    if len(password) < 3 or len(password) > 30 or re.match('^[.a-zA-Z0-9_-]+$', password) is None:
+    if len(password) < 3 or len(password) > 30 or re.match(r'^[.a-zA-Z0-9_-]+$', password) is None:
         data['password'] = password
 
     if len(data) > 0:
+        data['error'] = 'Invalid registration data'
         return create_response(data, 400, '*')
 
     check_user = User.query.filter_by(email=email).first()
 
     if check_user:
-        return create_response({}, 409, '*')
+        return create_response({'error': 'Email already taken'}, 409, '*')
 
     is_admin = email.endswith('@admin.agh.edu.pl')
 
@@ -104,7 +105,11 @@ def login():
         }
         status = 200
     else:
-        data = {}
+        if not user:
+            data = {'error': 'There is no user with that email'}
+        else:
+            data = {'error': 'Incorrect password'}
+
         status = 400
 
     return create_response(data, status, '*')
@@ -128,7 +133,7 @@ def admin_editor_requests():
         return response
 
     if role != 'admin':
-        return create_response({}, 403, '*')
+        return create_response({'error': 'Only admin has access to that'}, 403, '*')
 
     if request.method == 'POST':
         email = request.json['email']
@@ -138,19 +143,25 @@ def admin_editor_requests():
         check_user = User.query.filter_by(email=email).first()
         check_editor_request = EditorRequest.query.filter_by(user_email=email).first()
 
-        if not check_user or not check_editor_request or \
-                check_user.name != name or check_editor_request.name != name or \
-                approval not in ['accept', 'reject']:
-            status = 409
-        else:
-            if approval == 'accept':
-                check_user.is_editor = True
-            db.session.delete(check_editor_request)
-            db.session.commit()
+        data = None
+        if not check_user:
+            data = {'error': 'There is no user with that email'}
+        elif not check_editor_request:
+            data = {'error': 'There is no editor request with that email'}
+        elif check_user.name != name or check_editor_request.name != name:
+            data = {'error': 'Incorrect name'}
+        elif approval not in ['accept', 'reject']:
+            data = {'error': 'Incorrect approval status, must be accept or reject'}
 
-            status = 200
+        if data is not None:
+            return create_response(data, 409, '*')
 
-        return create_response({}, status, '*')
+        if approval == 'accept':
+            check_user.is_editor = True
+        db.session.delete(check_editor_request)
+        db.session.commit()
+
+        return create_response({}, 200, '*')
 
     editor_requests = EditorRequest.query.all()
     data = [{'name': u.name, 'email': u.user_email} for u in editor_requests]

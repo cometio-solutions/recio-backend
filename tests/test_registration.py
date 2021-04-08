@@ -10,15 +10,15 @@ def test_valid_registration_input():
     """
     url = 'http://127.0.0.1:5000/user'
 
-    data = {'name': 'proper_name', 'email': 'register@test.agh.edu.pl',
+    data = {'name': 'Proper Name', 'email': 'register@test.agh.edu.pl',
             'password': '12345', 'editorRequest': False}
     assert requests.post(url, json=data).status_code == 200
 
-    data = {'name': 'proper_name', 'email': 'reg@test.student.agh.edu.pl',
+    data = {'name': 'Józef śniezynski', 'email': 'reg@test.student.agh.edu.pl',
             'password': '12345', 'editorRequest': False}
     assert requests.post(url, json=data).status_code == 200
 
-    data = {'name': 'proper_name', 'email': 'register@test.agh.edu.pl',
+    data = {'name': 'Proper Name', 'email': 'register@test.agh.edu.pl',
             'password': '12345', 'editorRequest': False}
     assert requests.post(url, json=data).status_code == 409
 
@@ -34,6 +34,6 @@ def test_valid_registration_input():
             'password': '45', 'editorRequest': False}
     assert requests.post(url, json=data).status_code == 400
 
-    data = {'name': 'proper_name ', 'email': 'proper@test.agh.edu.pl',
+    data = {'name': 'not!proper_name ', 'email': 'proper@test.agh.edu.pl',
             'password': '12345', 'editorRequest': False}
     assert requests.post(url, json=data).status_code == 400

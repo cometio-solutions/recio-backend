@@ -14,7 +14,7 @@ def handle_request_token(request):
     :return: pair (role, Response) where one value is None
     """
     if 'token' not in request.headers:
-        return None, create_response({'message': 'No token found, log in!'}, 401, '*')
+        return None, create_response({'error': 'No token found, log in!'}, 401, '*')
 
     try:
         token = jwt.decode(
@@ -23,9 +23,9 @@ def handle_request_token(request):
             algorithms='HS256'
         )
     except jwt.ExpiredSignatureError:
-        return None, create_response({'message': 'Token expired, log in again!'}, 401, '*')
+        return None, create_response({'error': 'Token expired, log in again!'}, 401, '*')
     except jwt.InvalidSignatureError:
-        return None, create_response({'message': 'Invalid token signature!'}, 401, '*')
+        return None, create_response({'error': 'Invalid token signature!'}, 401, '*')
 
     role = token['role']
 
