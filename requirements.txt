@@ -8,3 +8,4 @@ werkzeug
 pesel
 xlsxwriter
 faker
+pylightxl
