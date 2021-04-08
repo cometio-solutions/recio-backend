@@ -4,7 +4,7 @@ from rest.db import db
 
 class Recruitment(db.Model):
     """
-    This class coresponds to recruitment table in database.
+    This class corresponds to recruitment table in database.
     It stores data about recruitment for given major
     """
     __tablename__ = 'recruitment'

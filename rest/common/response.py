@@ -14,7 +14,9 @@ def create_response(data, status, origin=None, headers=None):
     :param headers: string to set Access-Control-Allow-Headers header in response, needed for CORS
     :return: flask Response object
     """
-    response = Response(response=json.dumps(data), status=status, mimetype='application/json')
+    response = Response(response=json.dumps(data, default=str),
+                        status=status,
+                        mimetype='application/json')
 
     if origin is not None:
         response.headers.add('Access-Control-Allow-Origin', origin)

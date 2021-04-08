@@ -127,8 +127,21 @@ paths:
           description: invalid user information or approval status
       security:
           - JWT: []
+  /recruitment:
+    get:
+      tags:
+        - recruitment
+      summary: Returns all recruitments available in application.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: All available recruitment data.
+      security:
+        - JWT: []
 
-        
 definitions:
   CreateUserData:
     type: object

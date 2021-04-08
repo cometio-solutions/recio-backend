@@ -9,6 +9,7 @@ from rest.models.major import Major
 from rest.models.recruitment import Recruitment
 from rest.models.candidate import Candidate
 from rest.models.candidate_recruitment import CandidateRecruitment
+from rest.routes.recruitment import recruitment_url
 from rest.routes.user import user_url
 
 
@@ -19,6 +20,7 @@ def create_app():
     """
     app = Flask(__name__)
     app.register_blueprint(user_url, url_prefix='/user')
+    app.register_blueprint(recruitment_url, url_prefix='/recruitment')
     app.config['SECRET_KEY'] = os.urandom(24)
     app.config['CORS_HEADERS'] = 'Content-Type'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

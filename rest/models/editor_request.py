@@ -4,7 +4,7 @@ from rest.db import db
 
 class EditorRequest(db.Model):
     """
-    This class coresponds to editorRequest table in database.
+    This class corresponds to editorRequest table in database.
     It stores data of user that requested for editor role
     """
     __tablename__ = 'editorRequest'
