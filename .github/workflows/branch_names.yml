@@ -1,8 +1,0 @@
-steps:
-- uses: deepakputhraya/action-branch-name@master
-  with:
-    regex: '([a-z])+\/([a-z])+' 
-    allowed_prefixes: 'feature/CS-,fix/CS-' 
-    ignore: master
-    min_length: 5
-    max_length: 20
