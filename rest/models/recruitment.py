@@ -1,6 +1,5 @@
 """This module stores Recruitment model"""
 from datetime import datetime
-
 from rest.db import db
 
 
@@ -16,9 +15,20 @@ class Recruitment(db.Model):
     end_date = db.Column(db.DateTime, nullable=False)
     cycle_number = db.Column(db.Integer, nullable=False)
     slot_limit = db.Column(db.Integer, nullable=False)
-    point_limit = db.Column(db.Integer, nullable=False)
+    point_limit = db.Column(db.Integer)
 
     major = db.relationship('Major', backref=db.backref('recruitments', lazy=True))
+
+    @classmethod
+    def from_dict(cls, recruitment_dict):
+        """
+        Creates Recruitment from dict
+        :param recruitment_dict: dictionary with fields: end_date, slot_limit, cycle_number
+        :return: Recruitment object
+        """
+        return Recruitment(end_date=datetime.strptime(recruitment_dict['end_date'], '%Y-%m-%d'),
+                           cycle_number=int(recruitment_dict['cycle_number']),
+                           slot_limit=int(recruitment_dict['slot_limit']))
 
     def __repr__(self):
         return f'<Recruitment(id={self.id}, major_id={self.major_id}, end_date={self.end_date},' \

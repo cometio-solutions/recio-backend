@@ -65,7 +65,7 @@ class CandidateData():
         :param recruitment: Possible next recruitment
         :return: True if candidate can take part in the recruitment, False otherwise
         """
-        if recruitment.end_date < self.recruitment_data.end_date:
+        if recruitment.end_date <= self.recruitment_data.end_date:
             return False
         if recruitment.degree == "BACHELOR" and self.recruitment_data.degree == "MASTER":
             return False
