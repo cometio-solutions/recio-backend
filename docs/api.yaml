@@ -139,25 +139,8 @@ paths:
       responses:
         200:
           description: <h3> Collects all available recruitment data from database </h4>
-            <h4>
-            { "data" <br/>
-            &ensp;  [  <br/>
-            &ensp;&ensp;    { <br/>
-            &ensp;&ensp;&ensp;'id' <br/>
-            &ensp;&ensp;&ensp;'major_id' <br/>
-            &ensp;&ensp;&ensp;'end_date' <br/>
-            &ensp;&ensp;&ensp;'cycle_number' <br/>
-            &ensp;&ensp;&ensp;'slot_limit' <br/>
-            &ensp;&ensp;&ensp;'point_limit' <br/>
-            &ensp;&ensp;&ensp;'is_active' <br/>
-            &ensp;&ensp;&ensp;'faculty' <br/>
-            &ensp;&ensp;&ensp;'degree' <br/>
-            &ensp;&ensp;&ensp;'major_name' <br/>
-            &ensp;&ensp;&ensp;'major_mode' <br/>
-            &ensp;&ensp;&ensp;}, <br/>
-            &ensp;&ensp;&ensp;... <br/>
-            &ensp;] <br/>
-            } </h6><br/>
+          schema:
+            $ref: '#/definitions/GetAllRecruitmentData'
       security:
         - JWT: []
 
@@ -227,3 +210,47 @@ definitions:
       message:
         desciption: what went wrong with token authentication
         type: string
+  GetAllRecruitmentData:
+    type: object
+    properties:
+      data:
+        description: Array of available recruitment processes
+        type: array
+        items:
+          type: object
+          properties:
+              id:
+                description: The recruitment ID.
+                type: integer
+              major_id:
+                description: The major ID.
+                type: integer
+              end_date:
+                description: Recruitment end date.
+                type: string
+              cycle_number:
+                description: Number of cycles in.
+                type: integer
+              slot_limit:
+                description: Slot limit for current recruitmenet.
+                type: integer
+              point_limit:
+                description: Limit of points needed.
+                type: integer
+              is_active:
+                description: Determines whether recruitment is still open.
+                type: bool
+              faculty:
+                description: Faculty name.
+                type: string
+              degree:
+                description: Degree type Bachelor/Master.
+                type: string
+              major_name:
+                description: Major name.
+                type: string
+              major_mode:
+                description: Major mode Part time/Full time.
+                type: string
+
+
