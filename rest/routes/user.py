@@ -42,17 +42,17 @@ def register():
 
     data = {}
     if len(name) < 3 or len(name) > 30:
-        data['error'] = 'Invalid name, it has to be between 3 and 30 characters'
+        data['error'] = 'Nieprawidłowe imię, musi mieć od 3 do 30 znaków'
 
     if not email.endswith('agh.edu.pl'):
-        data['error'] = 'Invalid email, it has to end with agh.edu.pl'
+        data['error'] = 'Nieprawidłowy email, musi się kończyć agh.edu.pl'
     elif len(email) > 30:
-        data['error'] = 'Invalid email, it has to be between 3 and 30 characters'
+        data['error'] = 'Nieprawidłowy email, musi mieć mniej niż 30 znaków'
     elif '@' not in email:
-        data['error'] = 'Invalid email, it does not have @ character'
+        data['error'] = 'Nieprawidłowy email, musi posiadać znak @'
 
     if len(password) < 3 or len(password) > 30:
-        data['error'] = 'Invalid password, it has to be between 3 and 30 characters'
+        data['error'] = 'Nieprawdiłowe hasło, musi mieć od 3 do 30 znaków'
 
     if len(data) > 0:
         return create_response(data, 400, '*')
@@ -60,7 +60,7 @@ def register():
     check_user = User.query.filter_by(email=email).first()
 
     if check_user:
-        return create_response({'error': 'Email already taken'}, 409, '*')
+        return create_response({'error': 'Podany adres email jest już zajęty'}, 409, '*')
 
     is_admin = email.endswith('@admin.agh.edu.pl')
 
@@ -109,9 +109,9 @@ def login():
         status = 200
     else:
         if not user:
-            data = {'error': 'There is no user with that email'}
+            data = {'error': 'Nie ma użytkownika o takim adresie email'}
         else:
-            data = {'error': 'Incorrect password'}
+            data = {'error': 'Nieprawidłowe hasło'}
 
         status = 400
 
@@ -136,7 +136,7 @@ def admin_editor_requests():
         return response
 
     if role != 'admin':
-        return create_response({'error': 'Only admin has access to that'}, 403, '*')
+        return create_response({'error': 'Tylko admin ma do tego dostęp'}, 403, '*')
 
     if request.method == 'POST':
         email = request.json['email']
@@ -148,13 +148,13 @@ def admin_editor_requests():
 
         data = None
         if not check_user:
-            data = {'error': 'There is no user with that email'}
+            data = {'error': 'Nie ma użytkownika o podanym adresie email'}
         elif not check_editor_request:
-            data = {'error': 'There is no editor request with that email'}
+            data = {'error': 'Nie ma podania o edytora z takim adresem email'}
         elif check_user.name != name or check_editor_request.name != name:
-            data = {'error': 'Incorrect name'}
+            data = {'error': 'Nieprawidłowe imię'}
         elif approval not in ['accept', 'reject']:
-            data = {'error': 'Incorrect approval status, must be accept or reject'}
+            data = {'error': 'Niepoprawny status podania, musi być accept lub reject'}
 
         if data is not None:
             return create_response(data, 409, '*')
