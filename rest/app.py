@@ -45,12 +45,14 @@ def setup_database(app):
         print("Created database schema")
         # example
         admin = User("admin@admin.agh.edu.pl", "admin", "admin", True)
-        cs_major = Major(name="Informatyka", faculty="WIET", degree="BACHELOR", mode="FULL_TIME")
-        cs_recruitment = Recruitment(end_date=datetime.now(), cycle_number=1, point_limit=920,
-                                     slot_limit=300)
-        cs_major.recruitments.append(cs_recruitment)
+        # Add some recruitment data
+        for idx in range(10):
+            cs_major = Major(name="Informatyka", faculty="WIET", degree="BACHELOR", mode="FULL_TIME")
+            cs_recruitment = Recruitment(end_date=datetime.now(), cycle_number=idx, point_limit=920,
+                                         slot_limit=idx * 100)
+            cs_major.recruitments.append(cs_recruitment)
+            db.session.add(cs_major)
         db.session.add(admin)
-        db.session.add(cs_major)
         db.session.commit()
         print(User.query.all())
         print(Major.query.all())
