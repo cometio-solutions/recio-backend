@@ -1,6 +1,4 @@
 """This module contains endpoints connected with recruitment"""
-from datetime import datetime
-
 from flask import Blueprint, request
 
 from rest.common.response import create_response
@@ -57,19 +55,6 @@ def get_all_recruitment_data():
     if role is None:
         return response
 
-    recruitment_requests = Recruitment.query.all()
     data = dict()
-    data['data'] = [{
-        'id': rec.id,
-        'major_id': rec.major_id,
-        'end_date': rec.end_date.strftime("%m/%d/%Y, %H:%M:%S"),
-        'cycle_number': rec.cycle_number,
-        'slot_limit': rec.slot_limit,
-        'point_limit': rec.point_limit,
-        'is_active': bool(rec.end_date > datetime.now()),
-        'faculty': rec.major.faculty,
-        'degree': rec.major.degree,
-        'major_name': rec.major.name,
-        'major_mode': rec.major.mode
-    } for rec in recruitment_requests]
+    data['data'] = Recruitment.to_json()
     return create_response(data, 200, '*')
