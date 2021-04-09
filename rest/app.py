@@ -9,6 +9,7 @@ from rest.models.major import Major
 from rest.models.recruitment import Recruitment
 from rest.models.candidate import Candidate
 from rest.models.candidate_recruitment import CandidateRecruitment
+from rest.routes.recruitment import recruitment_url
 from rest.routes.user import user_url
 
 
@@ -19,6 +20,7 @@ def create_app():
     """
     app = Flask(__name__)
     app.register_blueprint(user_url, url_prefix='/user')
+    app.register_blueprint(recruitment_url, url_prefix='/recruitment')
     app.config['SECRET_KEY'] = os.urandom(24)
     app.config['CORS_HEADERS'] = 'Content-Type'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -43,12 +45,19 @@ def setup_database(app):
         print("Created database schema")
         # example
         admin = User("admin@admin.agh.edu.pl", "admin", "admin", True)
-        cs_major = Major(name="Informatyka", faculty="WIET", degree="BACHELOR", mode="FULL_TIME")
-        cs_recruitment = Recruitment(end_date=datetime.now(), cycle_number=1, point_limit=920,
-                                     slot_limit=300)
-        cs_major.recruitments.append(cs_recruitment)
+        # Add some recruitment data
+        for idx in range(10):
+            cs_major = Major(name="Informatyka",
+                             faculty="WIET",
+                             degree="BACHELOR",
+                             mode="FULL_TIME")
+            cs_recruitment = Recruitment(end_date=datetime.now(),
+                                         cycle_number=idx,
+                                         point_limit=920,
+                                         slot_limit=idx * 100)
+            cs_major.recruitments.append(cs_recruitment)
+            db.session.add(cs_major)
         db.session.add(admin)
-        db.session.add(cs_major)
         db.session.commit()
         print(User.query.all())
         print(Major.query.all())
