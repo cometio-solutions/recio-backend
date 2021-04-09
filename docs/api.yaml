@@ -138,7 +138,26 @@ paths:
         - application/json
       responses:
         200:
-          description: All available recruitment data.
+          description: <h3> Collects all available recruitment data from database </h4>
+            <h4>
+            { "data" <br/>
+            &ensp;  [  <br/>
+            &ensp;&ensp;    { <br/>
+            &ensp;&ensp;&ensp;'id' <br/>
+            &ensp;&ensp;&ensp;'major_id' <br/>
+            &ensp;&ensp;&ensp;'end_date' <br/>
+            &ensp;&ensp;&ensp;'cycle_number' <br/>
+            &ensp;&ensp;&ensp;'slot_limit' <br/>
+            &ensp;&ensp;&ensp;'point_limit' <br/>
+            &ensp;&ensp;&ensp;'is_active' <br/>
+            &ensp;&ensp;&ensp;'faculty' <br/>
+            &ensp;&ensp;&ensp;'degree' <br/>
+            &ensp;&ensp;&ensp;'major_name' <br/>
+            &ensp;&ensp;&ensp;'major_mode' <br/>
+            &ensp;&ensp;&ensp;}, <br/>
+            &ensp;&ensp;&ensp;... <br/>
+            &ensp;] <br/>
+            } </h6><br/>
       security:
         - JWT: []
 
