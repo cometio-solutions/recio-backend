@@ -152,7 +152,7 @@ def admin_editor_requests():
         elif not check_editor_request:
             data = {'error': 'Nie ma podania o edytora z takim adresem email'}
         elif check_user.name != name or check_editor_request.name != name:
-            data = {'error': 'Nieprawidłowe imię'}
+            data = {'error': 'Podane imię jest niepoprawne'}
         elif approval not in ['accept', 'reject']:
             data = {'error': 'Niepoprawny status podania, musi być accept lub reject'}
 
