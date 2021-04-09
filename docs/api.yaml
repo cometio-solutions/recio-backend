@@ -239,7 +239,7 @@ definitions:
                 type: integer
               is_active:
                 description: Determines whether recruitment is still open.
-                type: bool
+                type: boolean
               faculty:
                 description: Faculty name.
                 type: string
