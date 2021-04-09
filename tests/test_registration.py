@@ -33,7 +33,3 @@ def test_valid_registration_input():
     data = {'name': '123', 'email': 'register@test.agh.edu.pl',
             'password': '45', 'editorRequest': False}
     assert requests.post(url, json=data).status_code == 400
-
-    data = {'name': 'not!proper_name ', 'email': 'proper@test.agh.edu.pl',
-            'password': '12345', 'editorRequest': False}
-    assert requests.post(url, json=data).status_code == 400

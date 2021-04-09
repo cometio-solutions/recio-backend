@@ -1,5 +1,4 @@
 """This module contains endpoints connected with users"""
-import re
 from datetime import datetime, timedelta
 import jwt
 from flask import request, Blueprint, current_app
@@ -42,16 +41,20 @@ def register():
     editor_request = request.json['editorRequest']
 
     data = {}
-    if len(name) < 3 or len(name) > 30 or \
-            re.match(r'^[ąĄćĆęĘłŁńŃóÓśŚźŹżŻ.a-zA-Z0-9 _-]+$', name) is None:
-        data['name'] = name
-    if not email.endswith('agh.edu.pl') or re.match(r'^[.@a-zA-Z0-9_-]+$', email) is None:
-        data['email'] = email
-    if len(password) < 3 or len(password) > 30 or re.match(r'^[.a-zA-Z0-9_-]+$', password) is None:
-        data['password'] = password
+    if len(name) < 3 or len(name) > 30:
+        data['error'] = 'Invalid name, it has to be between 3 and 30 characters'
+
+    if not email.endswith('agh.edu.pl'):
+        data['error'] = 'Invalid email, it has to end with agh.edu.pl'
+    elif len(email) > 30:
+        data['error'] = 'Invalid email, it has to be between 3 and 30 characters'
+    elif '@' not in email:
+        data['error'] = 'Invalid email, it does not have @ character'
+
+    if len(password) < 3 or len(password) > 30:
+        data['error'] = 'Invalid password, it has to be between 3 and 30 characters'
 
     if len(data) > 0:
-        data['error'] = 'Invalid registration data'
         return create_response(data, 400, '*')
 
     check_user = User.query.filter_by(email=email).first()
