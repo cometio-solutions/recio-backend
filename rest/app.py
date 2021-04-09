@@ -47,8 +47,13 @@ def setup_database(app):
         admin = User("admin@admin.agh.edu.pl", "admin", "admin", True)
         # Add some recruitment data
         for idx in range(10):
-            cs_major = Major(name="Informatyka", faculty="WIET", degree="BACHELOR", mode="FULL_TIME")
-            cs_recruitment = Recruitment(end_date=datetime.now(), cycle_number=idx, point_limit=920,
+            cs_major = Major(name="Informatyka",
+                             faculty="WIET",
+                             degree="BACHELOR",
+                             mode="FULL_TIME")
+            cs_recruitment = Recruitment(end_date=datetime.now(),
+                                         cycle_number=idx,
+                                         point_limit=920,
                                          slot_limit=idx * 100)
             cs_major.recruitments.append(cs_recruitment)
             db.session.add(cs_major)
