@@ -6,6 +6,8 @@ host: 127.0.0.1:5000
 tags:
 - name: user
   description: Operations about user
+- name: file
+  description: Operations connected with files
 schemes:
   - http
 securityDefinitions:
@@ -24,7 +26,6 @@ paths:
       responses:
         200:
           description: app name
-  # example
   /user:
     post:
       tags:
@@ -47,11 +48,11 @@ paths:
         400:
           description: invalid data supplied (at least one item in response)
           schema:
-            $ref: '#/definitions/ErrorMessage'
+            $ref: '#/definitions/Error'
         409:
           description: given email is already taken
           schema:
-            $ref: '#/definitions/ErrorMessage'
+            $ref: '#/definitions/Error'
   /user/auth:
     post:
       tags:
@@ -76,7 +77,7 @@ paths:
         400:
           description: invalid email or password
           schema:
-            $ref: '#/definitions/ErrorMessage'
+            $ref: '#/definitions/Error'
   /user/editorRequests:
     get:
       tags:
@@ -100,7 +101,7 @@ paths:
         403:
           description: only admin have access to that
           schema:
-            $ref: '#/definitions/ErrorMessage'
+            $ref: '#/definitions/Error'
       security:
         - JWT: []
     post:
@@ -130,11 +131,11 @@ paths:
         403:
           description: only admin have access to that
           schema:
-            $ref: '#/definitions/ErrorMessage'
+            $ref: '#/definitions/Error'
         409:
           description: invalid user information or approval status
           schema:
-            $ref: '#/definitions/ErrorMessage'
+            $ref: '#/definitions/Error'
       security:
           - JWT: []
   /recruitment:
@@ -151,8 +152,45 @@ paths:
           description: <h3> Collects all available recruitment data from database </h4>
           schema:
             $ref: '#/definitions/GetAllRecruitmentData'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
       security:
         - JWT: []
+  /file:
+    post:
+      tags:
+      - file
+      summary: Enables editor to import file with data to the system. Accepts only csv and excel files with proper format. 
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+      - in: formData
+        name: data
+        type: file
+        description: The file to upload.
+      responses:
+        200:
+          description: File successfully imported
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        403:
+          description: only editor can import files
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: error during file import
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+          - JWT: []
 
 definitions:
   CreateUserData:
@@ -208,12 +246,6 @@ definitions:
       error:
         desciption: what went wrong with token authentication
         type: string
-  ErrorMessage:
-    type: object
-    properties:
-      error:
-        description: error containing message of what went wrong
-        type: string
   GetAllRecruitmentData:
     type: object
     properties:
@@ -256,3 +288,15 @@ definitions:
               major_mode:
                 description: Major mode Part time/Full time.
                 type: string
+  Error:
+    type: object
+    properties:
+      error:
+        desciption: error message in polish
+        type: string
+  Success:
+    type: object
+    properties:
+      message:
+        desciption: success message in polish
+        type: string

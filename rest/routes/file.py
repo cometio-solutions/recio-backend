@@ -68,6 +68,8 @@ def upload_file():
         uploaded_file.save(file_path)
         data = parse_file(file_path)
         save_data(data)
+        # removing file after save
+        os.remove(file_path)
         # pylint: disable=broad-except
     except Exception as exception:
         print(exception, file=sys.stderr)
