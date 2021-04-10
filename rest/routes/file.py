@@ -22,26 +22,16 @@ def check_file_name(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@file_url.before_request
-def handle_options():
-    """
-    Handles OPTIONS method for all file routes.
-    :return: flask Response object with status 200 if the method is OPTIONS, else None
-    """
-    headers = 'content-type, token'
-
-    if request.method == 'OPTIONS':
-        return create_response({}, 200, '*', headers)
-
-    return None
-
-
 @file_url.route('', methods=['POST', 'OPTIONS'])
 def upload_file():
     """
     Endpoint for file import.
     :return: success status if file was imported correctly or error otherwise
     """
+    if request.method == 'OPTIONS':
+        headers = 'content-type, token'
+        return create_response({}, 200, '*', headers)
+
     role, response = handle_request_token(request)
 
     if role is None:
@@ -64,9 +54,12 @@ def upload_file():
         save_data(data)
         # removing file after save
         os.remove(file_path)
+        response_data = {"message": "Zaimportowano plik."}
+        response_status_code = 200
         # pylint: disable=broad-except
     except Exception as exception:
         print(exception, file=sys.stderr)
-        return create_response({"error": "Nie udało się zaimportować pliku."}, 400, '*')
+        response_data = {"error": "Nie udało się zaimportować pliku."}
+        response_status_code = 400
 
-    return create_response({"message": "Zaimportowano plik."}, 200, '*')
+    return create_response(response_data, response_status_code, '*')
