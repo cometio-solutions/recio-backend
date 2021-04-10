@@ -35,7 +35,7 @@ class CandidateRecruitment(db.Model):
         """
         Creates CandidateRecruitment from dict
         :param candidate_dict: dictionary with fields: test_result, is_paid, matura_result, average
-        :return: Recruitment object
+        :return: CandidateRecruitment object
         """
         # forget to add is_paid to generator, will be added in the next sprint
         test_points = None

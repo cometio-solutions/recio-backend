@@ -42,7 +42,7 @@ class Candidate(db.Model):
         :param candidate_dict: dictionary with fields: pesel, name, city,region, country,
         highschool, highschool_city, matura_date, matura_result,
         graduation_date, college_name, faculty, field_of_study, mode,average,
-        :return: Recruitment object
+        :return: Candidate object
         """
         graduation_date = None
         average = None

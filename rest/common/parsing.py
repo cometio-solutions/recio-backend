@@ -144,7 +144,7 @@ def save_data(data):
 def save_recruitment(rec_dict):
     """
     Saves recruitment and major in database if they don't exist already
-    :param recruitment: List of dictionaries where in each of dictionary is one recruitment
+    :param rec_dict: dictionary with recruitment data
     :return: Recruitment
     """
     major = Major.query.filter_by(name=rec_dict['major_name'], faculty=rec_dict['faculty'],
