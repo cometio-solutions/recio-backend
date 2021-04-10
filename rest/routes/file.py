@@ -48,6 +48,8 @@ def upload_file():
         return create_response({"error": "Plik ma nieprawidłowe rozszerzenie."}, 400, '*')
 
     try:
+        if not os.path.exists("files/"):
+            os.makedirs("files/")
         file_path = os.path.join("files/", secure_filename(uploaded_file.filename))
         uploaded_file.save(file_path)
         data = parse_file(file_path)
