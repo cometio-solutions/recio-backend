@@ -7,8 +7,7 @@ import requests
 
 def test_rejecting_editor_request():
     """
-    Mustn't have emails 'reject_ed@test.agh.edu.pl' and 'reject_test@admin.agh.edu.pl'
-    in database or test will fail.
+    Test for file import
     :return:
     """
     url_user = 'http://127.0.0.1:5000/user'

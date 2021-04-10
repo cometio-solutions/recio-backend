@@ -39,14 +39,8 @@ def handle_options():
 @file_url.route('', methods=['POST', 'OPTIONS'])
 def upload_file():
     """
-    Either get (GET) editor requests or handle (POST) editor request, accept or reject.
-    Requires 'email' field in cookies.
-    if method GET and status 200 returns json:
-        list of [
-            'name': name
-            'email': email
-        ]
-    :return: success status and json editor requests (if GET)
+    Endpoint for file import.
+    :return: success status if file was imported correctly or error otherwise
     """
     role, response = handle_request_token(request)
 
