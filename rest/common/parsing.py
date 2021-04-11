@@ -1,6 +1,11 @@
 """Module for parsing .csv and .xlsx files"""
 import csv
 import pylightxl as xl
+from rest.db import db
+from rest.models.major import Major
+from rest.models.recruitment import Recruitment
+from rest.models.candidate import Candidate
+from rest.models.candidate_recruitment import CandidateRecruitment
 
 
 def parse_file(file):
@@ -119,3 +124,62 @@ def parse_excel(file):
         data.append((document_type, file_data))
 
     return data
+
+
+def save_data(data):
+    """
+    Saves data in database
+    :param data: list of pairs (document type, list of dictionaries),
+        where in each of the dictionary there is one candidate/recruitment
+    """
+    for pair in data:
+        doc_type, doc_data = pair
+        if doc_type == 'R':
+            for recruitment in doc_data:
+                save_recruitment(recruitment)
+        else:
+            save_candidates(doc_data)
+
+
+def save_recruitment(rec_dict):
+    """
+    Saves recruitment and major in database if they don't exist already
+    :param rec_dict: dictionary with recruitment data
+    :return: Recruitment
+    """
+    major = Major.query.filter_by(name=rec_dict['major_name'], faculty=rec_dict['faculty'],
+                                  degree=rec_dict['degree'], mode=rec_dict['mode']).first()
+    if not major:
+        major = Major.from_dict(rec_dict)
+        db.session.add(major)
+        db.session.commit()
+    recruitment = Recruitment.query.filter_by(major_id=major.id,
+                                              cycle_number=rec_dict['cycle_number'],
+                                              end_date=rec_dict['end_date']).first()
+    if not recruitment:
+        recruitment = Recruitment.from_dict(rec_dict)
+        recruitment.major = major
+        db.session.add(recruitment)
+    db.session.commit()
+    return recruitment
+
+
+def save_candidates(candidates):
+    """
+    Saves candidates in database
+    :param candidates: List of dictionaries where in each of dictionary is one candidate
+    """
+    for can_dict in candidates:
+        rec_dict = {key.replace('recruitment_', ''): value
+                    for key, value in can_dict.items() if key.startswith('recruitment')}
+        recruitment = save_recruitment(rec_dict)
+        candidate = Candidate.query.filter_by(pesel=int(can_dict['pesel'])).first()
+        if not candidate:
+            candidate = Candidate.from_dict(can_dict)
+            db.session.add(candidate)
+            db.session.commit()
+        candidate_recruitment = CandidateRecruitment.from_dict(can_dict)
+        candidate_recruitment.candidate = candidate
+        candidate_recruitment.recruitment = recruitment
+        db.session.add(candidate_recruitment)
+        db.session.commit()

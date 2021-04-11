@@ -5,5 +5,5 @@ HIGHSCHOOL_TYPE = ["Liceum", "Technikum"]
 FACULTIES = ["WIET", "WEAIB", "WIMIC", "WIMIR", "WZ", "WIMIP"]
 DEGREE = ["BACHELOR", "MASTER"]
 MAJORS = open("field_of_studies").read().splitlines()
-MODE = ["PART-TIME", "FULL-TIME"]
+MODE = ["PART_TIME", "FULL_TIME"]
 faker = Faker('pl_PL')

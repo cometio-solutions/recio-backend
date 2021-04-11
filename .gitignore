@@ -140,3 +140,6 @@ cython_debug/
 # csv and excel files
 */*.csv
 */*.xlsx
+
+# uploaded files
+files/

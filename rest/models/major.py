@@ -20,10 +20,20 @@ class Major(db.Model):
     """
     __tablename__ = 'major'
     id = db.Column(db.Integer, primary_key=True)
-    faculty = db.Column(db.String(30), nullable=False)
+    faculty = db.Column(db.String(50), nullable=False)
     degree = db.Column(db.Enum(Degree), nullable=False)
-    name = db.Column(db.String(30), nullable=False)
+    name = db.Column(db.String(50), nullable=False)
     mode = db.Column(db.Enum(Mode), nullable=False)
+
+    @classmethod
+    def from_dict(cls, major_dict):
+        """
+        Creates Major from dict
+        :param major_dict: dictionary with fields: faculty, degree, major_name, mode
+        :return: Major object
+        """
+        return Major(faculty=major_dict['faculty'], degree=major_dict['degree'],
+                     name=major_dict['major_name'], mode=major_dict['mode'])
 
     def __repr__(self):
         return f'<Major(id={self.id}, faculty={self.faculty}, degree={self.degree}, '\
