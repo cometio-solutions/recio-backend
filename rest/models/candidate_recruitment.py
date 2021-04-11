@@ -40,7 +40,7 @@ class CandidateRecruitment(db.Model):
         # forget to add is_paid to generator, will be added in the next sprint
         test_points = None
         points = None
-        if candidate_dict['test_result'] is not None and candidate_dict['average'] is not None:
+        if candidate_dict['test_result'] and candidate_dict['average']:
             test_points = int(candidate_dict['test_result'])
             average = float(candidate_dict['average'])
             points = int(int(20*average) + test_points)

@@ -1,7 +1,7 @@
 """This module stores Candidate model"""
 import enum
-from datetime import datetime
 from rest.db import db
+from rest.common.date import datetime_from_string
 
 
 class Mode(enum.Enum):
@@ -46,16 +46,15 @@ class Candidate(db.Model):
         """
         graduation_date = None
         average = None
-        if candidate_dict['graduation_date'] is not None:
-            graduation_date = datetime.strptime(candidate_dict['graduation_date'],
-                                                '%Y-%m-%d')
-        if candidate_dict['average'] is not None:
+        if candidate_dict['graduation_date']:
+            graduation_date = datetime_from_string(candidate_dict['graduation_date'])
+        if candidate_dict['average']:
             average = float(candidate_dict['average'])
         return Candidate(pesel=candidate_dict['pesel'], name=candidate_dict['name'],
                          city=candidate_dict['city'], region=candidate_dict['region'],
                          country=candidate_dict['country'], highschool=candidate_dict['highschool'],
                          highschool_city=candidate_dict['highschool_city'],
-                         matura_date=datetime.strptime(candidate_dict['matura_date'], '%Y-%m-%d'),
+                         matura_date=datetime_from_string(candidate_dict['matura_date']),
                          matura_points=int(candidate_dict['matura_result']),
                          graduation_date=graduation_date,
                          college_name=candidate_dict['college_name'],

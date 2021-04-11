@@ -1,5 +1,6 @@
 """This module stores Recruitment model"""
 from datetime import datetime
+from rest.common.date import datetime_from_string
 from rest.db import db
 
 
@@ -26,7 +27,7 @@ class Recruitment(db.Model):
         :param recruitment_dict: dictionary with fields: end_date, slot_limit, cycle_number
         :return: Recruitment object
         """
-        return Recruitment(end_date=datetime.strptime(recruitment_dict['end_date'], '%Y-%m-%d'),
+        return Recruitment(end_date=datetime_from_string(recruitment_dict['end_date']),
                            cycle_number=int(recruitment_dict['cycle_number']),
                            slot_limit=int(recruitment_dict['slot_limit']))
 
