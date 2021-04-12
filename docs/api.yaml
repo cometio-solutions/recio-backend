@@ -16,16 +16,6 @@ securityDefinitions:
     in: header
     name: token
 paths:
-  /:
-    get:
-      summary: base route
-      consumes:
-        - application/json
-      produces:
-        - application/json
-      responses:
-        200:
-          description: app name
   /user:
     post:
       tags:

@@ -1,5 +1,4 @@
 """This module creates recio app and setups database"""
-from datetime import datetime
 import os
 from flask import Flask
 from rest.db import db
@@ -50,18 +49,6 @@ def setup_database(app):
         editor = User("editor@agh.edu.pl", "editor", "editor", True)
         db.session.add(admin)
         db.session.add(editor)
-        # Add some recruitment data
-        for idx in range(10):
-            cs_major = Major(name="Informatyka",
-                             faculty="WIET",
-                             degree="BACHELOR",
-                             mode="FULL_TIME")
-            cs_recruitment = Recruitment(end_date=datetime.now(),
-                                         cycle_number=idx,
-                                         point_limit=920,
-                                         slot_limit=idx * 100)
-            cs_major.recruitments.append(cs_recruitment)
-            db.session.add(cs_major)
         db.session.commit()
         print(User.query.all())
         print(Major.query.all())

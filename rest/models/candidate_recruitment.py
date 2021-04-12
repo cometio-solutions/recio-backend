@@ -46,7 +46,8 @@ class CandidateRecruitment(db.Model):
             points = int(int(20*average) + test_points)
         else:
             points = int(candidate_dict['matura_result'])
-        return CandidateRecruitment(is_paid=True, points=points, test_points=test_points)
+        return CandidateRecruitment(is_paid=bool(int(candidate_dict['is_paid'])),
+                                    points=points, test_points=test_points)
 
     def __repr__(self):
         return f'<CandidateRecruitment(id={self.id}, recruitment_id={self.recruitment_id}, '\
