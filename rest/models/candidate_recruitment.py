@@ -3,7 +3,7 @@ import enum
 from rest.db import db
 
 
-class RecruitmenStatus(enum.Enum):
+class RecruitmentStatus(enum.Enum):
     """
     Candidate can be either QUALIFIED or NOT_QUALIFIED
     """
@@ -21,8 +21,8 @@ class CandidateRecruitment(db.Model):
     recruitment_id = db.Column(db.Integer, db.ForeignKey('recruitment.id'), nullable=False)
     candidate_pesel = db.Column(db.String(30), db.ForeignKey('candidate.pesel'), nullable=False)
     is_paid = db.Column(db.Boolean, nullable=False)
-    status = db.Column(db.Enum(RecruitmenStatus))
-    points = db.Column(db.Integer)
+    status = db.Column(db.Enum(RecruitmentStatus))
+    points = db.Column(db.Integer, nullable=False)
     test_points = db.Column(db.Integer)
 
     recruitment = db.relationship('Recruitment', backref=db.backref('candidate_recruitments',
