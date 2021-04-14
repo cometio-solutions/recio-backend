@@ -40,3 +40,5 @@ services:
       - ./docs/api.yaml:/api.yaml
     environment:
       SWAGGER_JSON: /api.yaml
+  cron:
+    build: ./cron

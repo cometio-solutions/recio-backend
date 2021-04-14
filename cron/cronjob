@@ -1,0 +1,1 @@
+0 0 * * * /usr/bin/python3 /cron/point_limit_cron.py >> /cron/cron.log
