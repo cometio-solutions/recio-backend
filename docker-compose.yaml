@@ -35,7 +35,7 @@ services:
     image: swaggerapi/swagger-ui
     container_name: swagger-ui
     ports:
-      - "80:8080"
+      - "8001:8080"
     volumes:
       - ./docs/api.yaml:/api.yaml
     environment:
