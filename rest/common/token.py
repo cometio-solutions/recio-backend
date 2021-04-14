@@ -1,4 +1,6 @@
 """This module has functions for token handling in routes"""
+import logging
+
 import jwt
 from flask import current_app
 from rest.common.response import create_response
@@ -13,7 +15,9 @@ def handle_request_token(request):
     :param request: incoming request that should contain 'token' field in header
     :return: pair (role, Response) where one value is None
     """
+    logging.info("Trying to handle request")
     if 'token' not in request.headers:
+        logging.warning("Token not provided")
         return None, create_response({'error': 'Musisz być zalogowany'}, 401, '*')
 
     try:
@@ -23,10 +27,14 @@ def handle_request_token(request):
             algorithms='HS256'
         )
     except jwt.ExpiredSignatureError:
+        logging.warning("Session expired")
         return None, create_response({'error': 'Sesja wygasła, zaloguj się ponownie'}, 401, '*')
     except jwt.InvalidSignatureError:
+        logging.warning("Bad token provided!")
         return None, create_response({'error': 'Nieprawidłowa sygnatura tokenu!'}, 401, '*')
 
     role = token['role']
+
+    logging.info("Properly handled request")
 
     return role, None

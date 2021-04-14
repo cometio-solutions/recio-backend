@@ -1,6 +1,6 @@
 """This module contains endpoints connected with file"""
+import logging
 import os
-import sys
 from flask import request, Blueprint
 from werkzeug.utils import secure_filename
 from rest.common.response import create_response
@@ -18,6 +18,7 @@ def check_file_name(filename):
     :param filename: Name of the uploaded file
     :return: True if filename is correct, False otherwise
     """
+    logging.info("Checking file name %s", filename)
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -28,6 +29,7 @@ def upload_file():
     Endpoint for file import.
     :return: success status if file was imported correctly or error otherwise
     """
+    logging.info("Uploading file")
     if request.method == 'OPTIONS':
         headers = 'content-type, token'
         return create_response({}, 200, '*', headers)
@@ -35,16 +37,20 @@ def upload_file():
     role, response = handle_request_token(request)
 
     if role is None:
+        logging.warning("Role is None!")
         return response
 
     if role != 'editor':
+        logging.warning("Role is not an editor!")
         return create_response({"error": "Tylko edytor ma możliwość dodawania plików."}, 403, '*')
 
     if 'data' not in request.files:
+        logging.warning("File not found!")
         return create_response({"error": "Nie znaleziono pliku."}, 400, '*')
     uploaded_file = request.files['data']
 
     if not uploaded_file or not check_file_name(uploaded_file.filename):
+        logging.warning("Bad file extension!")
         return create_response({"error": "Plik ma nieprawidłowe rozszerzenie."}, 400, '*')
 
     try:
@@ -60,7 +66,7 @@ def upload_file():
         response_status_code = 200
         # pylint: disable=broad-except
     except Exception as exception:
-        print(exception, file=sys.stderr)
+        logging.error("Could not load file! %s", str(exception))
         response_data = {"error": "Nie udało się zaimportować pliku."}
         response_status_code = 400
 

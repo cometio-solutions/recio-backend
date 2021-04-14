@@ -1,5 +1,6 @@
 """This module creates recio app and setups database"""
 import os
+import logging
 from flask import Flask
 from rest.db import db
 from rest.models.user import User
@@ -20,12 +21,15 @@ def create_app():
     This method creates flask app, sets config and conects to database
     :returns: created flask app
     """
+    logging.info("Creating flask app")
     app = Flask(__name__)
+    logging.info("Registering blueprints")
     app.register_blueprint(user_url, url_prefix='/user')
     app.register_blueprint(recruitment_url, url_prefix='/recruitment')
     app.register_blueprint(file_url, url_prefix='/file')
     app.register_blueprint(healthcheck_url, url_prefix='/healthcheck')
     app.register_blueprint(point_limit_url, url_prefix='/point-limit')
+    logging.info("Getting secrets")
     app.config['SECRET_KEY'] = os.urandom(24)
     app.config['CORS_HEADERS'] = 'Content-Type'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -33,7 +37,7 @@ def create_app():
         f'{os.environ["PASSWORD"]}@{os.environ["HOST"]}:{os.environ["PORT"]}/'\
         f'{os.environ["DATABASE"]}'
     db.init_app(app)
-    print("App created")
+    logging.info("App created properly!")
     return app
 
 
@@ -43,20 +47,21 @@ def setup_database(app):
     First all tables are droped and then new ones are created.
     At the end some example data are added into database
     """
+    logging.info("Setting up database")
     with app.app_context():
         db.drop_all()
         db.create_all()
         db.session.commit()
-        print("Created database schema")
+        logging.info("Created database schema")
         # example
         admin = User("admin@admin.agh.edu.pl", "admin", "admin", True)
         editor = User("editor@agh.edu.pl", "editor", "editor", True)
         db.session.add(admin)
         db.session.add(editor)
         db.session.commit()
-        print(User.query.all())
-        print(Major.query.all())
-        print(Recruitment.query.all())
-        print(EditorRequest.query.all())
-        print(Candidate.query.all())
-        print(CandidateRecruitment.query.all())
+        logging.info(User.query.all())
+        logging.info(Major.query.all())
+        logging.info(Recruitment.query.all())
+        logging.info(EditorRequest.query.all())
+        logging.info(Candidate.query.all())
+        logging.info(CandidateRecruitment.query.all())

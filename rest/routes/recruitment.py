@@ -1,6 +1,8 @@
 """This module contains endpoints connected with recruitment"""
 import sys
 from sqlalchemy.exc import SQLAlchemyError
+import logging
+
 from flask import Blueprint, request
 from rest.common.response import create_response
 from rest.common.token import handle_request_token
@@ -16,11 +18,13 @@ def handle_options():
     Handles OPTIONS method before recruitment endpoint
     :return: flask Response object with status 200 if the method is OPTIONS, else None
     """
+    logging.info("Handle options")
     headers = 'content-type, token'
 
     if request.method == 'OPTIONS':
         return create_response({}, 200, '*', headers)
 
+    logging.warning("Unable to handle options!")
     return None
 
 
@@ -51,10 +55,12 @@ def get_all_recruitment_data():
     ```
     :return: flask Response containing json with all recruitment data
     """
+    logging.info("Getting all recruitment data")
 
     role, response = handle_request_token(request)
 
     if role is None:
+        logging.warning("Role is None!")
         return response
 
     data = dict()
@@ -86,4 +92,6 @@ def get_recruitment_with_candidates(recruitment_id):
         print(exception, file=sys.stderr)
         return create_response({"error": "Błąd podczas pobierania kandydatów."}, 400, '*')
 
+    data['data'] = Recruitment.to_json()
+    logging.info("Got all recruitment data")
     return create_response(data, 200, '*')
