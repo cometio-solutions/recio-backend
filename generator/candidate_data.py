@@ -20,6 +20,7 @@ class CandidateData():
         self.highschool_city = faker.city()
         self.matura_date = faker.date_between_dates(date_start=datetime(2017, 1, 1),
                                                     date_end=recruitment_data.end_date)
+        self.is_paid = random.choice([1, 0])
         self.matura_result = random.randrange(100)
         self.test_result = random.randrange(100)
         if recruitment_data.degree == "MASTER":
@@ -48,6 +49,7 @@ class CandidateData():
         candidate = copy.deepcopy(other)
         candidate.recruitment_data = recruitment_data
         candidate.test_result = random.randrange(100)
+        candidate.is_paid = random.choice([1, 0])
         if recruitment_data.degree == "MASTER" and other.recruitment_data.degree == 'BACHELOR':
             candidate.graduation_date = str(faker.date_between_dates(
                                         date_start=other.recruitment_data.end_date,

@@ -21,7 +21,7 @@ def parse_file(file):
         pesel, name, city,region, country, highschool, highschool_city, matura_date, matura_result,
         test_result, graduation_date, college_name, faculty, field_of_study, mode,average,
         recruitment_faculty, recruitment_degree, recruitment_major_name, recruitment_mode,
-        recruitment_end_date, recruitment_cycle_number, recruitment_slot_limit
+        recruitment_end_date, recruitment_cycle_number, recruitment_slot_limit, is_paid
 
     The following are fields in the dictionary for 'R' (recruitments) file type (7 total):
         faculty, degree, major_name, mode, end_date, cycle_number, slot_limit
@@ -47,7 +47,7 @@ def check_document_type(columns_number):
     :param columns_number: Number of columns (length of the row)
     :return: String, either 'C' (candidates) or 'R' (recruitments)
     """
-    if columns_number == 23:
+    if columns_number == 24:
         return 'C'
 
     if columns_number == 7:
