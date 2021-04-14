@@ -7,8 +7,8 @@ class RecruitmentStatus(enum.Enum):
     """
     Candidate can be either QUALIFIED or NOT_QUALIFIED
     """
-    QUALIFIED = "QUALIFIED"
-    NOT_QUALIFIED = "NOT_QUALIFIED"
+    QUALIFIED = "ZAKWALIFIKOWANY"
+    NOT_QUALIFIED = "NIE ZAKWALIFIKOWANY"
 
 
 class CandidateRecruitment(db.Model):
@@ -53,3 +53,39 @@ class CandidateRecruitment(db.Model):
         return f'<CandidateRecruitment(id={self.id}, recruitment_id={self.recruitment_id}, '\
             f'candidate_pesel={self.candidate_pesel}, is_paid={self.is_paid}, status={self.status}'\
             f', points={self.points}, test_points={self.test_points})>'
+
+    @staticmethod
+    def to_json(rec):
+        """
+        Return json for candidate recruitment data
+        :param rec: candidate recruitment
+        :return: dict with candidate recruitment
+        """
+        graduation_date = None
+        status = None
+        if rec.candidate.graduation_date:
+            graduation_date = rec.candidate.graduation_date.strftime("%m/%d/%Y, %H:%M:%S")
+        if rec.status:
+            status = rec.status.value
+        return {
+            'candidate_recruitment_id': rec.id,
+            'is_paid': rec.is_paid,
+            'status': status,
+            'points': rec.points,
+            'test_points': rec.test_points,
+            'pesel': rec.candidate.pesel,
+            'name': rec.candidate.name,
+            "city": rec.candidate.city,
+            "region": rec.candidate.region,
+            "country": rec.candidate.country,
+            "highschool": rec.candidate.highschool,
+            "highschool_city": rec.candidate.highschool_city,
+            "matura_date": rec.candidate.matura_date.strftime("%m/%d/%Y, %H:%M:%S"),
+            "matura_points": rec.candidate.matura_points,
+            "graduation_date": graduation_date,
+            "college_name": rec.candidate.college_name,
+            'faculty': rec.candidate.faculty,
+            'field_of_study': rec.candidate.field_of_study,
+            'mode': rec.candidate.mode,
+            'average': rec.candidate.average
+        }

@@ -148,7 +148,7 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
-  /recruitment/point-limit:
+  /point-limit:
     post:
       tags:
         - recruitment
@@ -168,6 +168,39 @@ paths:
             $ref: '#/definitions/TokenError'
         400:
           description: error during calculating point limits
+          schema:
+            $ref: '#/definitions/Error'
+  /recruitment/{recruitment_id}:
+    get:
+      tags:
+        - recruitment
+      summary: Gets recruitment by id
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Recruitment data with list of candidates
+          schema:
+            $ref: '#/definitions/RecruitmentData'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        404:
+          description: recruitment not found
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: error during fetching data
           schema:
             $ref: '#/definitions/Error'
       security:
@@ -302,6 +335,108 @@ definitions:
               major_mode:
                 description: Major mode Part time/Full time.
                 type: string
+  RecruitmentData:
+    type: object
+    properties:
+      id:
+        description: The recruitment ID.
+        type: integer
+      major_id:
+        description: The major ID.
+        type: integer
+      end_date:
+        description: Recruitment end date.
+        type: string
+      cycle_number:
+        description: Number of cycles in.
+        type: integer
+      slot_limit:
+        description: Slot limit for current recruitmenet.
+        type: integer
+      point_limit:
+        description: Limit of points needed.
+        type: integer
+      is_active:
+        description: Determines whether recruitment is still open.
+        type: boolean
+      faculty:
+        description: Faculty name.
+        type: string
+      degree:
+        description: Degree type Bachelor/Master.
+        type: string
+      major_name:
+        description: Major name.
+        type: string
+      major_mode:
+        description: Major mode Part time/Full time.
+        type: string
+      candidates:
+        description: array of candidates for that recruitment
+        type: array
+        items:
+          type: object
+          properties:
+            candidate_recruitment_id:
+              description: The candidate recruitment ID.
+              type: integer
+            is_paid:
+              description: Determines whether candidate paid for the recruitment
+              type: boolean
+            status:
+              description: Status type QUALIFIED/NOT_QUALIFIED
+              type: string
+            points:
+              description: Number of candidate points for that recruitment
+              type: integer
+            test_points:
+              description: Optional if candidate took an entry test
+              type: integer
+            pesel:
+              description: Candidate id
+              type: string
+            name:
+              description: Candidate name
+              type: boolean
+            city:
+              description: City where candidate lives
+              type: string
+            region:
+              description: Region where candidate lives
+              type: string
+            country:
+              description: Country where candidate lives
+              type: string
+            highschool:
+              description: Highschool which candidate finished
+              type: string
+            highschool_city:
+              description: Citi of candidate's highschool
+              type: string
+            matura_date:
+              description: Date of candidate's matura exam
+              type: string
+            matura_points:
+              description: Candidate's matura result
+              type: integer
+            graduation_date:
+              description: Candidate's graduation date if he finished Bachelor studies
+              type: string
+            college_name: 
+              description: Optional name of the college which candidate finished
+              type: string
+            faculty:
+              description: Optional name of faculty that candidate finished
+              type: string
+            field_of_study:
+              description: Field of study that candidate finished
+              type: string
+            mode:
+              description: Mode of studies candidate finished. Either PART_TIME or FULL_TIME
+              type: string
+            average:
+              description: Average of candidate's bachelor studies
+              type: number
   Error:
     type: object
     properties:

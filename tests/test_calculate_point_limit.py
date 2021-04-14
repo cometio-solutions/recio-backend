@@ -11,7 +11,7 @@ def test_calculate_point_limit_request():
     :return:
     """
     url_user_auth = 'http://127.0.0.1:5000/user/auth'
-    url_point_limit = 'http://127.0.0.1:5000/recruitment/point-limit'
+    url_point_limit = 'http://127.0.0.1:5000/point-limit'
     url_file_import = 'http://127.0.0.1:5000/file'
     url_recruitment = 'http://127.0.0.1:5000/recruitment'
     generator_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../generator')

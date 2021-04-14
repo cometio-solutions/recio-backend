@@ -37,9 +37,13 @@ class Recruitment(db.Model):
                f' point_limit={self.point_limit})>'
 
     @staticmethod
-    def to_json():
-        """ Return json for recruitment data """
-        return [{
+    def to_json(rec):
+        """
+        Return json for recruitment data
+        :param rec: Recruitment
+        :return: recruitment dict
+        """
+        return {
             'id': rec.id,
             'major_id': rec.major_id,
             'end_date': rec.end_date.strftime("%m/%d/%Y, %H:%M:%S"),
@@ -51,4 +55,4 @@ class Recruitment(db.Model):
             'degree': rec.major.degree,
             'major_name': rec.major.name,
             'major_mode': rec.major.mode
-        } for rec in Recruitment.query.all()]
+        }
