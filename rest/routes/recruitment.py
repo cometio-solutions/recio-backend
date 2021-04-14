@@ -1,5 +1,6 @@
 """This module contains endpoints connected with recruitment"""
 import sys
+from sqlalchemy.exc import SQLAlchemyError 
 from flask import Blueprint, request
 from rest.common.response import create_response
 from rest.common.token import handle_request_token
@@ -81,8 +82,7 @@ def get_recruitment_with_candidates(recruitment_id):
         data = Recruitment.to_json(recruitment)
         data['candidates'] = [CandidateRecruitment.to_json(rec) for rec in
                               recruitment.candidate_recruitments]
-    # pylint: disable=broad-except
-    except Exception as exception:
+    except (AttributeError, SQLAlchemyError) as exception:
         print(exception, file=sys.stderr)
         return create_response({"error": "Błąd podczas pobierania kandydatów."}, 400, '*')
 
