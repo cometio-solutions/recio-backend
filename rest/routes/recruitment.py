@@ -68,10 +68,10 @@ def get_recruitment_with_candidates(recruitment_id):
     :param id: id of recruitment
     :return: flask Response containing json with recruitment data
     """
-    # role, response = handle_request_token(request)
+    role, response = handle_request_token(request)
 
-    # if role is None:
-    #     return response
+    if role is None:
+        return response
 
     try:
         recruitment = Recruitment.query.filter_by(id=recruitment_id).first()

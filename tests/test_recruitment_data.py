@@ -11,7 +11,7 @@ def test_recruitment_data():
     """
     url_user_auth = 'http://127.0.0.1:5000/user/auth'
     url_file_import = 'http://127.0.0.1:5000/file'
-    url_recruitment = 'http://127.0.0.1:5000/recruitment/1'
+    url_recruitment = 'http://127.0.0.1:5000/recruitment/'
 
     data = {'email': 'editor@agh.edu.pl', 'password': 'editor'}
     response = requests.post(url_user_auth, json=data)
@@ -27,8 +27,19 @@ def test_recruitment_data():
     assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}
     ).status_code == 200
 
+    # not auth
+    assert requests.get(
+        url_recruitment + '1'
+    ).status_code == 401
+
+    # recruitment not found
+    assert requests.get(
+        url_recruitment + '9999',
+        headers={'token': editor_login['token']}
+    ).status_code == 404
+
     # testing fetching specific recruitment with id=1
     assert requests.get(
-        url_recruitment,
+        url_recruitment + '1',
         headers={'token': editor_login['token']}
     ).status_code == 200
