@@ -1,6 +1,7 @@
 """This module contains endpoints connected with recruitment"""
 import sys
 from datetime import date
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
 from rest.common.response import create_response
 from rest.common.token import handle_request_token
@@ -93,8 +94,7 @@ def calculate_point_limit():
             recruitment.point_limit = point_limit
 
         db.session.commit()
-    # pylint: disable=broad-except
-    except Exception as exception:
+    except (AttributeError, SQLAlchemyError) as exception:
         print(exception, file=sys.stderr)
         return create_response({"error": "Nie udało się obliczyć progów."}, 400, "*")
 
