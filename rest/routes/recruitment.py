@@ -1,6 +1,6 @@
 """This module contains endpoints connected with recruitment"""
 import sys
-from sqlalchemy.exc import SQLAlchemyError 
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
 from rest.common.response import create_response
 from rest.common.token import handle_request_token
