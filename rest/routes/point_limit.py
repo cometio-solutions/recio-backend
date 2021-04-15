@@ -1,18 +1,18 @@
-"""This module contains endpoints connected with recruitment"""
+"""This module contains endpoints connected with point limit"""
 import sys
 from datetime import date
-from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
-from rest.common.response import create_response
+from sqlalchemy.exc import SQLAlchemyError
 from rest.common.token import handle_request_token
-from rest.models.recruitment import Recruitment
+from rest.common.response import create_response
 from rest.models.candidate_recruitment import CandidateRecruitment, RecruitmentStatus
+from rest.models.recruitment import Recruitment
 from rest.db import db
 
 point_limit_url = Blueprint('point-limit', __name__)
 
 
-@point_limit_url.route('/point-limit', methods=['POST', 'OPTIONS'])
+@point_limit_url.route('', methods=['POST', 'OPTIONS'])
 def calculate_point_limit():
     """
     Calculates point limit for every recruitment that has ended
