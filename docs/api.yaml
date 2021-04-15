@@ -148,6 +148,30 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
+  /recruitment/point-limit:
+    post:
+      tags:
+        - recruitment
+      summary: Calculates point limit for every recruitment that has ended
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Point limits successufully calculated
+          schema:
+            $ref: '#/definitions/Success'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        400:
+          description: error during calculating point limits
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: []
   /file:
     post:
       tags:
