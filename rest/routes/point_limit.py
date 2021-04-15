@@ -19,8 +19,7 @@ def calculate_point_limit():
     :return: flask Response with operation result
     """
     if request.method == 'OPTIONS':
-        headers = 'content-type, token'
-        return create_response({}, 200, '*', headers)
+        return create_response({}, 200, '*', 'content-type, token')
 
     role, response = handle_request_token(request)
 
