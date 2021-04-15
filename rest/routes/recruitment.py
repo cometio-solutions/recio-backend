@@ -1,13 +1,11 @@
 """This module contains endpoints connected with recruitment"""
 import sys
-from datetime import date
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
 from rest.common.response import create_response
 from rest.common.token import handle_request_token
 from rest.models.recruitment import Recruitment
-from rest.models.candidate_recruitment import CandidateRecruitment, RecruitmentStatus
-from rest.db import db
+from rest.models.candidate_recruitment import CandidateRecruitment
 
 recruitment_url = Blueprint('recruitment', __name__)
 
@@ -60,15 +58,16 @@ def get_all_recruitment_data():
         return response
 
     data = dict()
-    data['data'] = Recruitment.to_json()
+    data['data'] = [Recruitment.to_json(rec) for rec in Recruitment.query.all()]
     return create_response(data, 200, '*')
 
 
-@recruitment_url.route('/point-limit', methods=['POST', 'OPTIONS'])
-def calculate_point_limit():
+@recruitment_url.route('/<recruitment_id>', methods=['GET', 'OPTIONS'])
+def get_recruitment_with_candidates(recruitment_id):
     """
-    Calculates point limit for every recruitment that has ended
-    :return: flask Response with operation result
+    Get recruitment with given id and all candidates
+    :param id: id of recruitment
+    :return: flask Response containing json with recruitment data
     """
     role, response = handle_request_token(request)
 
@@ -76,26 +75,15 @@ def calculate_point_limit():
         return response
 
     try:
-        recruitments = Recruitment.query.filter_by(point_limit=None)\
-                                        .filter(Recruitment.end_date <= date.today())
-        for recruitment in recruitments:
-            candidates = CandidateRecruitment.query.filter_by(recruitment_id=recruitment.id)\
-                                                    .order_by(CandidateRecruitment.points.desc())
-            places_left = recruitment.slot_limit
-            point_limit = 0
-            for candidate in candidates:
-                if places_left > 0 and candidate.is_paid:
-                    candidate.status = RecruitmentStatus.QUALIFIED
-                    places_left -= 1
-                    if places_left == 0:
-                        point_limit = candidate.points
-                else:
-                    candidate.status = RecruitmentStatus.NOT_QUALIFIED
-            recruitment.point_limit = point_limit
-
-        db.session.commit()
+        recruitment = Recruitment.query.filter_by(id=recruitment_id).first()
+        if not recruitment:
+            return create_response({"error": "Nie znaleziono podanej rekrutacji"}, 404, '*')
+        data = dict()
+        data = Recruitment.to_json(recruitment)
+        data['candidates'] = [CandidateRecruitment.to_json(rec) for rec in
+                              recruitment.candidate_recruitments]
     except (AttributeError, SQLAlchemyError) as exception:
         print(exception, file=sys.stderr)
-        return create_response({"error": "Nie udało się obliczyć progów."}, 400, "*")
+        return create_response({"error": "Błąd podczas pobierania kandydatów."}, 400, '*')
 
-    return create_response({"message": "Wyliczono progi rekrutacyjne"}, 200, "*")
+    return create_response(data, 200, '*')

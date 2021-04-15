@@ -12,6 +12,7 @@ from rest.routes.recruitment import recruitment_url
 from rest.routes.user import user_url
 from rest.routes.file import file_url
 from rest.routes.health_check import healthcheck_url
+from rest.routes.point_limit import point_limit_url
 
 
 def create_app():
@@ -24,6 +25,7 @@ def create_app():
     app.register_blueprint(recruitment_url, url_prefix='/recruitment')
     app.register_blueprint(file_url, url_prefix='/file')
     app.register_blueprint(healthcheck_url, url_prefix='/healthcheck')
+    app.register_blueprint(point_limit_url, url_prefix='/point-limit')
     app.config['SECRET_KEY'] = os.urandom(24)
     app.config['CORS_HEADERS'] = 'Content-Type'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
