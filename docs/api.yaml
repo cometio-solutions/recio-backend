@@ -8,6 +8,8 @@ tags:
   description: Operations about user
 - name: file
   description: Operations connected with files
+- name: filter
+  description: Operations connected to getting data for filtering
 schemes:
   - http
 securityDefinitions:
@@ -238,6 +240,7 @@ paths:
             $ref: '#/definitions/Error'
       security:
           - JWT: []
+<<<<<<< HEAD
   /years:
     get:
       tags:
@@ -250,16 +253,42 @@ paths:
       responses:
         200:
           description: Years successfully got
-          schema:
-            type: array
-            items:
-              type: integer
+            schema:
+              type: array
+              items:
+                type: integer
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
       security:
-          - JWT: []
+        - JWT: []
+  /filter/fields:
+    get:
+      tags:
+        - filter
+      summary: Gets list of all fields of study
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: List of all fields of study
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RecruitmentData'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        500:
+          description: error during reading fields of study file
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: [ ]
 
 definitions:
   CreateUserData:
@@ -313,7 +342,7 @@ definitions:
     type: object
     properties:
       error:
-        desciption: what went wrong with token authentication
+        description: what went wrong with token authentication
         type: string
   GetAllRecruitmentData:
     type: object
@@ -466,11 +495,11 @@ definitions:
     type: object
     properties:
       error:
-        desciption: error message in polish
+        description: error message in polish
         type: string
   Success:
     type: object
     properties:
       message:
-        desciption: success message in polish
+        description: success message in polish
         type: string
