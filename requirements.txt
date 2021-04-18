@@ -9,3 +9,5 @@ pesel
 xlsxwriter
 faker
 pylightxl
+coloredlogs
+ruamel.yaml

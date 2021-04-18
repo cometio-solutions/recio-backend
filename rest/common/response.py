@@ -1,5 +1,7 @@
 """This module has functions for responses in routes"""
 import json
+import logging
+
 from flask import Response
 
 
@@ -14,6 +16,8 @@ def create_response(data, status, origin=None, headers=None):
     :param headers: string to set Access-Control-Allow-Headers header in response, needed for CORS
     :return: flask Response object
     """
+    logging.info("Creating response data=%s, status=%s", str(data), str(status))
+
     response = Response(response=json.dumps(data, default=str),
                         status=status,
                         mimetype='application/json')
