@@ -278,7 +278,7 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/RecruitmentData'
+              $ref: '#/definitions/Field'
         401:
           description: user is unauthenticated
           schema:
@@ -502,4 +502,10 @@ definitions:
     properties:
       message:
         description: success message in polish
+        type: string
+  Field:
+    type: object
+    properties:
+      field:
+        description: field of study
         type: string
