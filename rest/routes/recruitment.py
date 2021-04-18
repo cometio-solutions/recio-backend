@@ -1,7 +1,7 @@
 """This module contains endpoints connected with recruitment"""
 import sys
-from sqlalchemy.exc import SQLAlchemyError
 import logging
+from sqlalchemy.exc import SQLAlchemyError
 
 from flask import Blueprint, request
 from rest.common.response import create_response
@@ -64,7 +64,7 @@ def get_all_recruitment_data():
         return response
 
     data = dict()
-    data['data'] = [Recruitment.to_json(rec) for rec in Recruitment.query.all()]
+    data['data'] = [Recruitment.to_json(rec=rec) for rec in Recruitment.query.all()]
     return create_response(data, 200, '*')
 
 
@@ -92,6 +92,5 @@ def get_recruitment_with_candidates(recruitment_id):
         print(exception, file=sys.stderr)
         return create_response({"error": "Błąd podczas pobierania kandydatów."}, 400, '*')
 
-    data['data'] = Recruitment.to_json()
     logging.info("Got all recruitment data")
     return create_response(data, 200, '*')
