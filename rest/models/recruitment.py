@@ -54,7 +54,7 @@ class Recruitment(db.Model):
             'point_limit': rec.point_limit,
             'is_active': bool(rec.end_date > datetime.now()),
             'faculty': rec.major.faculty,
-            'degree': rec.major.degree.value,
+            'degree': str(rec.major.degree),
             'major_name': rec.major.name,
-            'major_mode': rec.major.mode.value
+            'major_mode': str(rec.major.mode)
         }

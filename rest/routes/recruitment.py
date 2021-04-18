@@ -65,11 +65,11 @@ def get_all_recruitment_data():
         return response
 
     data = dict()
-    data['data'] = [Recruitment.to_json(rec,
-                                        len(Recruitment.query.filter_by(id=rec.id)
-                                            .first()
-                                            .candidate_recruitments))
-                    for rec in Recruitment.query.all()]
+    data['data'] = [
+        Recruitment.to_json(rec,
+                            len(CandidateRecruitment.query.filter_by(recruitment_id=rec.id).all()))
+        for rec in Recruitment.query.all()
+    ]
     return create_response(data, 200, '*')
 
 
@@ -89,7 +89,7 @@ def get_recruitment_with_candidates(recruitment_id):
         recruitment = Recruitment.query.filter_by(id=recruitment_id).first()
         if not recruitment:
             return create_response({"error": "Nie znaleziono podanej rekrutacji"}, 404, '*')
-        data = Recruitment.to_json(recruitment)
+        data = Recruitment.to_json(recruitment, len(recruitment.candidate_recruitments))
         data['candidates'] = [CandidateRecruitment.to_json(rec) for rec in
                               recruitment.candidate_recruitments]
     except (AttributeError, SQLAlchemyError) as exception:
