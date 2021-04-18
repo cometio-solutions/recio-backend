@@ -42,6 +42,7 @@ def get_all_recruitment_data():
                 'end_date'
                 'cycle_number'
                 'slot_limit'
+                'candidates_num'
                 'point_limit'
                 'is_active'
                 'faculty'
@@ -64,7 +65,11 @@ def get_all_recruitment_data():
         return response
 
     data = dict()
-    data['data'] = [Recruitment.to_json(rec=rec) for rec in Recruitment.query.all()]
+    data['data'] = [Recruitment.to_json(rec,
+                                        len(Recruitment.query.filter_by(id=rec.id)
+                                            .first()
+                                            .candidate_recruitments))
+                    for rec in Recruitment.query.all()]
     return create_response(data, 200, '*')
 
 
@@ -72,7 +77,7 @@ def get_all_recruitment_data():
 def get_recruitment_with_candidates(recruitment_id):
     """
     Get recruitment with given id and all candidates
-    :param id: id of recruitment
+    :param recruitment_id: id of recruitment
     :return: flask Response containing json with recruitment data
     """
     role, response = handle_request_token(request)
@@ -84,12 +89,11 @@ def get_recruitment_with_candidates(recruitment_id):
         recruitment = Recruitment.query.filter_by(id=recruitment_id).first()
         if not recruitment:
             return create_response({"error": "Nie znaleziono podanej rekrutacji"}, 404, '*')
-        data = dict()
         data = Recruitment.to_json(recruitment)
         data['candidates'] = [CandidateRecruitment.to_json(rec) for rec in
                               recruitment.candidate_recruitments]
     except (AttributeError, SQLAlchemyError) as exception:
-        print(exception, file=sys.stderr)
+        logging.error(exception, file=sys.stderr)
         return create_response({"error": "Błąd podczas pobierania kandydatów."}, 400, '*')
 
     logging.info("Got all recruitment data")
