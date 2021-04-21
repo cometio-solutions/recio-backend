@@ -315,7 +315,10 @@ definitions:
                 description: Number of cycles in.
                 type: integer
               slot_limit:
-                description: Slot limit for current recruitmenet.
+                description: Slot limit for current recruitment.
+                type: integer
+              candidates_num:
+                description: Number of candidates in current recruitment.
                 type: integer
               point_limit:
                 description: Limit of points needed.

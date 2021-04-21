@@ -12,6 +12,14 @@ class Degree(enum.Enum):
     BACHELOR = "BACHELOR"
     MASTER = "MASTER"
 
+    def __str__(self):
+        if str(self.value) == "MASTER":
+            return "Studia drugiego stopnia"
+        if str(self.value) == "BACHELOR":
+            return "Studia pierwszego stopnia"
+
+        return "Studia"
+
 
 class Major(db.Model):
     """
@@ -36,5 +44,5 @@ class Major(db.Model):
                      name=major_dict['major_name'], mode=major_dict['mode'])
 
     def __repr__(self):
-        return f'<Major(id={self.id}, faculty={self.faculty}, degree={self.degree}, '\
-            f'name={self.name}, mode={self.mode})>'
+        return f'<Major(id={self.id}, faculty={self.faculty}, degree={self.degree}, ' \
+               f'name={self.name}, mode={self.mode})>'

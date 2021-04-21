@@ -12,6 +12,14 @@ class Mode(enum.Enum):
     FULL_TIME = "FULL_TIME"
     PART_TIME = "PART_TIME"
 
+    def __str__(self):
+        if str(self.value) == "FULL_TIME":
+            return "Studia dzienne"
+        if str(self.value) == "PART_TIME":
+            return "Studia zaoczne"
+
+        return "Studia"
+
 
 class Candidate(db.Model):
     """

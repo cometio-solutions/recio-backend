@@ -37,9 +37,10 @@ class Recruitment(db.Model):
                f' point_limit={self.point_limit})>'
 
     @staticmethod
-    def to_json(rec):
+    def to_json(rec, candidates_num):
         """
         Return json for recruitment data
+        :param candidates_num: int
         :param rec: Recruitment
         :return: recruitment dict
         """
@@ -49,10 +50,11 @@ class Recruitment(db.Model):
             'end_date': rec.end_date.strftime("%m/%d/%Y, %H:%M:%S"),
             'cycle_number': rec.cycle_number,
             'slot_limit': rec.slot_limit,
+            'candidates_num': candidates_num,
             'point_limit': rec.point_limit,
             'is_active': bool(rec.end_date > datetime.now()),
             'faculty': rec.major.faculty,
-            'degree': rec.major.degree,
+            'degree': str(rec.major.degree),
             'major_name': rec.major.name,
-            'major_mode': rec.major.mode
+            'major_mode': str(rec.major.mode)
         }
