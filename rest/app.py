@@ -14,6 +14,7 @@ from rest.routes.user import user_url
 from rest.routes.file import file_url
 from rest.routes.health_check import healthcheck_url
 from rest.routes.point_limit import point_limit_url
+from rest.routes.years import years_url
 
 
 def create_app():
@@ -29,6 +30,7 @@ def create_app():
     app.register_blueprint(file_url, url_prefix='/file')
     app.register_blueprint(healthcheck_url, url_prefix='/healthcheck')
     app.register_blueprint(point_limit_url, url_prefix='/point-limit')
+    app.register_blueprint(years_url, url_prefix='/years')
     logging.info("Getting secrets")
     app.config['SECRET_KEY'] = os.urandom(24)
     app.config['CORS_HEADERS'] = 'Content-Type'
