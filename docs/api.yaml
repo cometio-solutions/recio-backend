@@ -242,7 +242,7 @@ paths:
     get:
       tags:
         - years
-      summary: Gets all years in which recruitment happened
+      summary: Gets a list of years (integers) in wchich recruitment happened
       consumes:
         - application/json
       produces:
@@ -253,11 +253,13 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Year'
+              type: integer
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
+      security:
+          - JWT: []
 
 definitions:
   CreateUserData:
@@ -472,9 +474,3 @@ definitions:
       message:
         desciption: success message in polish
         type: string
-  Year:
-    type: object
-    properties:
-      year:
-        description: year in which recruitment happened
-        type: integer

@@ -1,3 +1,4 @@
+"""This module contains endpoint about getting years of recruitments"""
 import logging
 from flask import Blueprint, request
 from rest.models.recruitment import Recruitment
@@ -10,6 +11,10 @@ years_url = Blueprint('years', __name__)
 
 @years_url.route('', methods=['GET', 'OPTIONS'])
 def get_years():
+    """
+    Gets all years in which Recruitment happened.
+    :return: flask response object with a list of years
+    """
     if request.method == 'OPTIONS':
         logging.info("Handle options")
         return create_response({}, 200, '*', 'content-type, token')
@@ -27,4 +32,7 @@ def get_years():
         if rec.end_date.year not in years:
             years.add(rec.end_date.year)
 
-    return create_response(list(years), 200, '*')
+    years = list(years)
+    years.sort(reverse=True)
+
+    return create_response(years, 200, '*')
