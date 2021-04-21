@@ -15,7 +15,7 @@ from rest.routes.file import file_url
 from rest.routes.health_check import healthcheck_url
 from rest.routes.point_limit import point_limit_url
 from rest.routes.years import years_url
-from rest.routes.filter import filter_url
+from rest.routes.majors import majors_url
 
 
 def create_app():
@@ -33,7 +33,7 @@ def create_app():
     app.register_blueprint(healthcheck_url, url_prefix='/healthcheck')
     app.register_blueprint(point_limit_url, url_prefix='/point-limit')
     app.register_blueprint(years_url, url_prefix='/years')
-    app.register_blueprint(filter_url, url_prefix='/filter')
+    app.register_blueprint(majors_url, url_prefix='/majors')
 
     logging.info("Getting secrets")
     app.config['SECRET_KEY'] = os.urandom(24)

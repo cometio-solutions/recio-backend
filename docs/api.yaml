@@ -8,8 +8,6 @@ tags:
   description: Operations about user
 - name: file
   description: Operations connected with files
-- name: filter
-  description: Operations connected to getting data for filtering
 schemes:
   - http
 securityDefinitions:
@@ -240,7 +238,6 @@ paths:
             $ref: '#/definitions/Error'
       security:
           - JWT: []
-<<<<<<< HEAD
   /years:
     get:
       tags:
@@ -263,11 +260,11 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
-  /filter/fields:
+  /majors:
     get:
       tags:
-        - filter
-      summary: Gets list of all fields of study
+        - majors
+      summary: Gets list of all majors in DB
       consumes:
         - application/json
       produces:
@@ -278,17 +275,13 @@ paths:
           schema:
             type: array
             items:
-              $ref: '#/definitions/Field'
+              $ref: '#/definitions/Major'
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
-        500:
-          description: error during reading fields of study file
-          schema:
-            $ref: '#/definitions/Error'
       security:
-        - JWT: [ ]
+        - JWT: []
 
 definitions:
   CreateUserData:
@@ -503,9 +496,21 @@ definitions:
       message:
         description: success message in polish
         type: string
-  Field:
+  Major:
     type: object
     properties:
-      field:
-        description: field of study
+      id:
+        description: id of the major
+        type: integer
+      faculty:
+        description: faculty on which the major is
+        type: string
+      degree:
+        description: the degree of the major
+        type: string
+      name:
+        description: name of the major
+        type: string
+      mode:
+        description: mode of the major
         type: string
