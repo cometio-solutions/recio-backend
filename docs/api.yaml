@@ -238,6 +238,28 @@ paths:
             $ref: '#/definitions/Error'
       security:
           - JWT: []
+  /years:
+    get:
+      tags:
+        - years
+      summary: Gets a list of years (integers) in wchich recruitment happened
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Years successfully got
+          schema:
+            type: array
+            items:
+              type: integer
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+      security:
+          - JWT: []
 
 definitions:
   CreateUserData:
