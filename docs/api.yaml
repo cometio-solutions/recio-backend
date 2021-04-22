@@ -259,7 +259,29 @@ paths:
           schema:
             $ref: '#/definitions/TokenError'
       security:
-          - JWT: []
+        - JWT: []
+  /majors:
+    get:
+      tags:
+        - majors
+      summary: Gets list of all majors in DB
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: List of all fields of study
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Major'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+      security:
+        - JWT: []
 
 definitions:
   CreateUserData:
@@ -313,7 +335,7 @@ definitions:
     type: object
     properties:
       error:
-        desciption: what went wrong with token authentication
+        description: what went wrong with token authentication
         type: string
   GetAllRecruitmentData:
     type: object
@@ -466,11 +488,29 @@ definitions:
     type: object
     properties:
       error:
-        desciption: error message in polish
+        description: error message in polish
         type: string
   Success:
     type: object
     properties:
       message:
-        desciption: success message in polish
+        description: success message in polish
+        type: string
+  Major:
+    type: object
+    properties:
+      id:
+        description: id of the major
+        type: integer
+      faculty:
+        description: faculty on which the major is
+        type: string
+      degree:
+        description: the degree of the major
+        type: string
+      name:
+        description: name of the major
+        type: string
+      mode:
+        description: mode of the major
         type: string
