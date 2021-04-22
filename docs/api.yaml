@@ -250,10 +250,10 @@ paths:
       responses:
         200:
           description: Years successfully got
-            schema:
-              type: array
-              items:
-                type: integer
+          schema:
+            type: array
+            items:
+              type: integer
         401:
           description: user is unauthenticated
           schema:
