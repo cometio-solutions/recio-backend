@@ -41,7 +41,7 @@ def get_origins():
     :return: flask Response containing JSON with all origins
     """
     if request.method == 'OPTIONS':
-        logging.info("Handling options")
+        logging.info('Handling options')
         return create_response({}, 200, '*', 'content-type, token')
 
     logging.info('Getting all origins')
@@ -82,7 +82,7 @@ def get_origins():
                 elif candidate.region[:9] == 'Warmińsko':
                     origins['Warmińsko-mazurskie'] += 1
                 else:
-                    logging.warning('Unknown candidate region: ' + candidate.region)
+                    logging.warning('Unknown candidate region: %s', candidate.region)
         else:
             origins['Inne'] += 1
 
