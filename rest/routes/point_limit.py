@@ -62,10 +62,10 @@ def get_point_limits(recruitment_id):
     if request.method == 'OPTIONS':
         return create_response({}, 200, '*', 'content-type, token')
 
-    # role, response = handle_request_token(request)
+    role, response = handle_request_token(request)
 
-    # if role is None:
-    #     return response
+    if role is None:
+        return response
 
     point_limits = {}
     try:
