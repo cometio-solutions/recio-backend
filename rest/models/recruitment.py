@@ -13,12 +13,16 @@ class Recruitment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     major_id = db.Column(db.Integer, db.ForeignKey('major.id'),
                          nullable=False)
+    previous_recruitment_id = db.Column(db.Integer, db.ForeignKey('recruitment.id'))
     end_date = db.Column(db.DateTime, nullable=False)
     cycle_number = db.Column(db.Integer, nullable=False)
     slot_limit = db.Column(db.Integer, nullable=False)
     point_limit = db.Column(db.Integer)
 
     major = db.relationship('Major', backref=db.backref('recruitments', lazy=True))
+    previous_recruitment = db.relationship('Recruitment',
+                                           backref=db.backref('next_recruitment', lazy=True),
+                                           remote_side=[id], uselist=False)
 
     @classmethod
     def from_dict(cls, recruitment_dict):
@@ -47,6 +51,7 @@ class Recruitment(db.Model):
         return {
             'id': rec.id,
             'major_id': rec.major_id,
+            'previous_recruitment_id': rec.previous_recruitment_id,
             'end_date': rec.end_date.strftime("%m/%d/%Y, %H:%M:%S"),
             'cycle_number': rec.cycle_number,
             'slot_limit': rec.slot_limit,
