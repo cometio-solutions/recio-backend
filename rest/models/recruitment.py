@@ -21,7 +21,8 @@ class Recruitment(db.Model):
 
     major = db.relationship('Major', backref=db.backref('recruitments', lazy=True))
     previous_recruitment = db.relationship('Recruitment',
-                                           backref=db.backref('next_recruitment', lazy=True),
+                                           backref=db.backref('next_recruitment', lazy=True,
+                                                              uselist=False),
                                            remote_side=[id], uselist=False)
 
     @classmethod

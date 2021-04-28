@@ -7,7 +7,7 @@ from recruitment_data import RecruitmentData
 from candidate_data import CandidateData
 
 
-def generate_data(recruitments_number):
+def generate_data(recruitments_number, cycle_number):
     """
     Generates recruitment and candidates data
     :param recruitments_number: Number of recruitments you want to generate
@@ -15,7 +15,9 @@ def generate_data(recruitments_number):
     """
     recruitments = [RecruitmentData() for _ in range(recruitments_number)]
     for recruitment in list(recruitments):
-        recruitments.append(RecruitmentData.from_previous_cycle(recruitment))
+        for _ in range(cycle_number):
+            recruitment = RecruitmentData.from_previous_cycle(recruitment)
+            recruitments.append(recruitment)
     candidates = [CandidateData(data) for data in recruitments]
     for recruitment in recruitments:
         number_of_candidates = random.randrange(200)
@@ -83,12 +85,12 @@ def generate_excel(recruitments, candidates):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python3 generator.py <number of recruitments to generate>")
+    if len(sys.argv) != 3:
+        print("Usage: python3 generator.py <number of recruitments to generate> <number of cycles>")
     if int(sys.argv[1]) == 0:
         print("You need to generete at least one recruitment")
     else:
         recruitment_number = int(sys.argv[1])
-        recruitments_data, candidates_data = generate_data(recruitment_number)
+        recruitments_data, candidates_data = generate_data(recruitment_number, int(sys.argv[2]))
         generate_csv(recruitments_data, candidates_data)
         generate_excel(recruitments_data, candidates_data)
