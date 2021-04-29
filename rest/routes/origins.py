@@ -73,17 +73,16 @@ def get_origins():
     }
 
     for candidate in Candidate.query.all():
-        if candidate.country == 'Polska':
+        country = candidate.country.capitalize()
+
+        if country == 'Polska':
+            region = candidate.region.capitalize().replace(' ', '')
+
             try:
-                origins[candidate.region] += 1
+                origins[region] += 1
             except KeyError:
-                if candidate.region[:8] == 'Kujawsko':
-                    origins['Kujawsko-pomorskie'] += 1
-                elif candidate.region[:9] == 'Warmińsko':
-                    origins['Warmińsko-mazurskie'] += 1
-                else:
-                    logging.warning('Unknown candidate region: %s', candidate.region)
+                logging.warning('Unknown candidate region: %s', region)
         else:
             origins['Inne'] += 1
 
-    return create_response(origins, 200, '*')
+        return create_response(origins, 200, '*')
