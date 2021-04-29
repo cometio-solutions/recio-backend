@@ -72,20 +72,16 @@ def get_point_limits(recruitment_id):
         recruitment = Recruitment.query.get(recruitment_id)
         # handle previous recruitment
         current_recruitment = recruitment
-        print(current_recruitment, file=sys.stderr)
         while current_recruitment is not None:
             point_limits[current_recruitment.cycle_number] = current_recruitment.point_limit
             current_recruitment = current_recruitment.previous_recruitment
-            print(current_recruitment, file=sys.stderr)
-        # handel next recruitment
+        # handle next recruitment
         current_recruitment = recruitment.next_recruitment
-        print(current_recruitment, file=sys.stderr)
         while current_recruitment is not None:
             point_limits[current_recruitment.cycle_number] = current_recruitment.point_limit
             current_recruitment = current_recruitment.next_recruitment
-            print(current_recruitment, file=sys.stderr)
     except (AttributeError, SQLAlchemyError) as exception:
-        print(exception, file=sys.stderr)
+        logging.error(exception, file=sys.stderr)
         return create_response({"error": "Nie udało się pobrać progów rekrutacyjnych."}, 400, "*")
 
     data = [{"point_limit": value, "cycle_number": key} for key, value in point_limits.items()]
