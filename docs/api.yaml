@@ -352,6 +352,9 @@ definitions:
               major_id:
                 description: The major ID.
                 type: integer
+              previous_recruitment_id:
+                description: ID of the previous cycle recruitment. Might be null.
+                type: integer
               end_date:
                 description: Recruitment end date.
                 type: string
@@ -391,6 +394,9 @@ definitions:
       major_id:
         description: The major ID.
         type: integer
+      previous_recruitment_id:
+          description: ID of the previous cycle recruitment. Might be null.
+          type: integer
       end_date:
         description: Recruitment end date.
         type: string

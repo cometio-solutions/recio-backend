@@ -39,6 +39,7 @@ def get_all_recruitment_data():
             {
                 'id'
                 'major_id'
+                'previous_recruitment_id
                 'end_date'
                 'cycle_number'
                 'slot_limit'

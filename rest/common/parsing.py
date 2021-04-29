@@ -158,6 +158,13 @@ def save_recruitment(rec_dict):
                                               end_date=rec_dict['end_date']).first()
     if not recruitment:
         recruitment = Recruitment.from_dict(rec_dict)
+        if recruitment.cycle_number != 1:
+            previous_recruitment = Recruitment.query\
+                                              .filter_by(major_id=major.id,
+                                                         cycle_number=(recruitment.cycle_number-1))\
+                                              .filter(Recruitment.end_date < recruitment.end_date)\
+                                              .first()
+            recruitment.previous_recruitment = previous_recruitment
         recruitment.major = major
         db.session.add(recruitment)
     db.session.commit()
