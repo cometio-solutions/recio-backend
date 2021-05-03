@@ -282,6 +282,26 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
+  /origins:
+    get:
+      tags:
+        - origins
+      summary: Gets summary of candidates' origins
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Dictionary of Polish regions and Other
+          schema:
+            $ref: '#/definitions/Origins'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+      security:
+        - JWT: []
 
 definitions:
   CreateUserData:
@@ -520,3 +540,40 @@ definitions:
       mode:
         description: mode of the major
         type: string
+  Origins:
+    type: object
+    properties:
+      Dolnośląskie:
+        type: integer
+      Kujawsko-pomorskie:
+        type: integer
+      Lubelskie:
+        type: integer
+      Lubuskie:
+        type: integer
+      Łódzkie:
+        type: integer
+      Małopolskie:
+        type: integer
+      Mazowieckie:
+        type: integer
+      Opolskie:
+        type: integer
+      Podkarpackie:
+        type: integer
+      Podlaskie:
+        type: integer
+      Pomorskie:
+        type: integer
+      Śląskie:
+        type: integer
+      Świętokrzyskie:
+        type: integer
+      Warmińsko-mazurskie:
+        type: integer
+      Wielkopolskie:
+        type: integer
+      Zachodniopomorskie:
+        type: integer
+      Inne:
+        type: integer
