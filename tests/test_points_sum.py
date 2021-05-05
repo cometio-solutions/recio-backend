@@ -1,25 +1,26 @@
-"""Testing getting origins"""
+"""Testing getting points sum"""
 import json
 import subprocess
 import os
 import requests
 
 
-def test_getting_origins():
+def test_getting_points_sum():
     """
-    Test getting candidate origins.
+    Test getting points sum.
     :return:
     """
     url_user_auth = 'http://127.0.0.1:5000/user/auth'
-    url_origins = 'http://127.0.0.1:5000/origins'
+    url_points_sum = 'http://127.0.0.1:5000/points'
     url_file_import = 'http://127.0.0.1:5000/file'
     generator_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../generator')
 
     # generating file
-    return_code = subprocess.call('python3 generator.py 1 2', shell=True, stdout=subprocess.PIPE,
+    return_code = subprocess.call('python3 generator.py 1', shell=True, stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT, cwd=generator_folder_path)
     assert return_code == 0
 
+    # logging as a editor
     data = {'email': 'editor@agh.edu.pl', 'password': 'editor'}
     response = requests.post(url_user_auth, json=data)
     editor_login = json.loads(response.content.decode('utf-8'))
@@ -29,9 +30,15 @@ def test_getting_origins():
     assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}
      ).status_code == 200
 
-    response = requests.get(url_origins, headers={'token': editor_login['token']})
+    # get points sum
+    response = requests.get(url_points_sum, headers={'token': editor_login['token']})
     assert response.status_code == 200
 
+    # test data in response
     data = json.loads(response.content.decode('utf-8'))
-    assert len(data.keys()) == 17
-    assert isinstance(data['Inne'], int)
+    assert len(data) > 0
+    assert isinstance(data, list)
+    for d in data:
+        assert isinstance(d, dict)
+        assert isinstance(d['points'], int)
+        assert isinstance(d['numberOfStudents'], int)

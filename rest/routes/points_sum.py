@@ -11,6 +11,18 @@ points_sum_url = Blueprint('points', __name__)
 
 @points_sum_url.route('', methods=['GET', 'OPTIONS'])
 def get_points_sum():
+    """
+    Gets the number of candidates that have gotten certain number of points.
+    Returns list of dictionaries containing 'points' and 'numberOfStudents':
+    [
+        {
+            'points': <integer>
+            'numberOfStudents': <integer>
+        }
+        ...
+    ]
+    :return: flask Response containing json with points sum
+    """
     if request.method == 'OPTIONS':
         logging.info("Handle options")
         return create_response({}, 200, '*', 'content-type, token')
@@ -31,7 +43,10 @@ def get_points_sum():
             points[rec.points] += 1
 
     points_sum = []
-    for k, v in points.items():
-        points_sum.append({'points': k, 'numberOfStudents': v})
+    for key, value in points.items():
+        try:
+            points_sum.append({'points': int(key), 'numberOfStudents': value})
+        except ValueError:
+            continue
 
-    create_response(points_sum, 200, '*')
+    return create_response(points_sum, 200, '*')
