@@ -337,6 +337,28 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
+  /points:
+    get:
+      tags:
+        - recruitment
+      summary: Gets the number of candidates that have gotten certain number of points
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          decription: Successfully gotten number of candidates for points they achieved
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/PointsSum'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+      security:
+        - JWT: []
 
 definitions:
   CreateUserData:
@@ -624,3 +646,12 @@ definitions:
         point_limit:
           type: integer
           description: point limit of recruitment
+  PointsSum:
+    type: object
+    properties:
+      points:
+        description: number of points candidates achieved
+        type: integer
+      numberOfStudents:
+        description: number of students that have achieved these points
+        type: integer
