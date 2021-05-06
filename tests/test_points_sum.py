@@ -27,11 +27,11 @@ def test_getting_points_sum():
 
     # xlsx file
     files = {'data': ('data.xlsx', open(generator_folder_path + '/data.xlsx', 'rb'))}
-    assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}
-     ).status_code == 200
+    assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}).status_code == 200
 
     # get points sum
-    response = requests.get(url_points_sum, headers={'token': editor_login['token']})
+    data = {'recruitment_id': 1}
+    response = requests.post(url_points_sum, json=data, headers={'token': editor_login['token']})
     assert response.status_code == 200
 
     # test data in response
@@ -42,3 +42,7 @@ def test_getting_points_sum():
         assert isinstance(d, dict)
         assert isinstance(d['points'], int)
         assert isinstance(d['numberOfStudents'], int)
+
+    # test bad recruitment id
+    data = {'recruitment_id': -1}
+    assert requests.post(url_points_sum, json=data, headers={'token': editor_login['token']}).status_code == 400
