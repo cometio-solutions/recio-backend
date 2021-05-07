@@ -5,7 +5,7 @@ import sys
 from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
 from rest.common.token import handle_request_token
-from rest.common.response import create_response
+from rest.common.response import create_response, options_response
 from rest.models.candidate_recruitment import CandidateRecruitment
 from rest.models.recruitment import Recruitment
 
@@ -19,14 +19,7 @@ def handle_options():
     Handles OPTIONS method before recruitment endpoint
     :return: flask Response object with status 200 if the method is OPTIONS, else None
     """
-    logging.info("Handle options")
-    headers = 'content-type, token'
-
-    if request.method == 'OPTIONS':
-        return create_response({}, 200, '*', headers)
-
-    logging.warning("Unable to handle options!")
-    return None
+    return options_response(request)
 
 
 @points_sum_url.route('/<recruitment_id>', methods=['GET', 'OPTIONS'])
