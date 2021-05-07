@@ -1,5 +1,8 @@
 """This module contains endpoint for getting recruitment points of candidates"""
 import logging
+import sys
+
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
 from rest.common.token import handle_request_token
 from rest.common.response import create_response
@@ -10,14 +13,26 @@ from rest.models.recruitment import Recruitment
 points_sum_url = Blueprint('points', __name__)
 
 
-@points_sum_url.route('', methods=['POST', 'OPTIONS'])
-def get_points_sum():
+@points_sum_url.before_request
+def handle_options():
+    """
+    Handles OPTIONS method before recruitment endpoint
+    :return: flask Response object with status 200 if the method is OPTIONS, else None
+    """
+    logging.info("Handle options")
+    headers = 'content-type, token'
+
+    if request.method == 'OPTIONS':
+        return create_response({}, 200, '*', headers)
+
+    logging.warning("Unable to handle options!")
+    return None
+
+
+@points_sum_url.route('/<recruitment_id>', methods=['GET', 'OPTIONS'])
+def get_points_sum(recruitment_id):
     """
     Gets the number of candidates that have gotten certain number of points.
-    Needs recruitment id in JSON format:
-    {
-        'recruitment_id': <integer>
-    }
 
     Returns list of dictionaries containing 'points' and 'numberOfStudents':
     [
@@ -27,11 +42,9 @@ def get_points_sum():
         }
         ...
     ]
+    :param recruitment_id: id of recruitment
     :return: flask Response containing json with points sum
     """
-    if request.method == 'OPTIONS':
-        logging.info("Handle options")
-        return create_response({}, 200, '*', 'content-type, token')
 
     logging.info("Getting recruitment points sum")
 
@@ -41,18 +54,22 @@ def get_points_sum():
         logging.warning("Role is None!")
         return response
 
-    recruitment_id = request.json['recruitment_id']
-
-    if not Recruitment.query.filter_by(id=recruitment_id).first():
-        logging.warning('Nie znaleziono rekrutacji o takim ID')
-        return create_response({'error': 'Nie znaleziono rekrutacji o takim ID'}, 400, '*')
-
     points = {}
-    for rec in CandidateRecruitment.query.filter_by(recruitment_id=recruitment_id):
-        if rec.points not in points:
-            points[rec.points] = 1
-        else:
-            points[rec.points] += 1
+
+    try:
+        if not Recruitment.query.filter_by(id=recruitment_id).first():
+            logging.warning('Nie znaleziono rekrutacji o takim ID')
+            return create_response({'error': 'Nie znaleziono podanej rekrutacji ID'}, 404, '*')
+
+        for rec in CandidateRecruitment.query.filter_by(recruitment_id=recruitment_id):
+            if rec.points not in points:
+                points[rec.points] = 1
+            else:
+                points[rec.points] += 1
+
+    except (AttributeError, SQLAlchemyError) as exception:
+        logging.error(exception, file=sys.stderr)
+        return create_response({'error': 'Błąd podczas pobierania punktów'}, 400, '*')
 
     points_sum = [{'points': key, 'numberOfStudents': value} for key, value in points.items()]
 

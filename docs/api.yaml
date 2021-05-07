@@ -337,22 +337,22 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
-  /points:
-    post:
+  /points/{recruitment_id}:
+    get:
       tags:
         - recruitment
       summary: Gets the number of candidates that have gotten certain number of points
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
       consumes:
         - application/json
       produces:
         - application/json
-      parameters:
-        - in: body
-          name: recruitment_id
-          description: Recruitment id for which we want points sum
-          required: true
-          schema:
-            $ref: '#/definitions/RecruitmentID'
       responses:
         200:
           decription: Successfully gotten number of candidates for points they achieved
@@ -361,13 +361,17 @@ paths:
             items:
               $ref: '#/definitions/PointsSum'
         400:
-          description: Recruitment with such ID was not found
+          description: error during retrieving point from database
           schema:
             $ref: '#/definitions/Error'
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
+        404:
+          description: Recruitment with such ID was not found
+          schema:
+            $ref: '#/definitions/Error'
       security:
         - JWT: []
 
@@ -665,10 +669,4 @@ definitions:
         type: integer
       numberOfStudents:
         description: number of students that have achieved these points
-        type: integer
-  RecruitmentID:
-    type: object
-    properties:
-      recruitment_id:
-        description: the id of recruitment for which we want points sum
         type: integer

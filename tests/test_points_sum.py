@@ -30,8 +30,7 @@ def test_getting_points_sum():
     assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}).status_code == 200
 
     # get points sum
-    data = {'recruitment_id': 1}
-    response = requests.post(url_points_sum, json=data, headers={'token': editor_login['token']})
+    response = requests.get(url_points_sum + '/1', headers={'token': editor_login['token']})
     assert response.status_code == 200
 
     # test data in response
@@ -44,5 +43,4 @@ def test_getting_points_sum():
         assert isinstance(d['numberOfStudents'], int)
 
     # test bad recruitment id
-    data = {'recruitment_id': -1}
-    assert requests.post(url_points_sum, json=data, headers={'token': editor_login['token']}).status_code == 400
+    assert requests.get(url_points_sum + '/-1', headers={'token': editor_login['token']}).status_code == 404
