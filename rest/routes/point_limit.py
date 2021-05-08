@@ -1,5 +1,6 @@
 """This module contains endpoints connected with point limit"""
 import sys
+import logging
 from datetime import date
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
@@ -46,7 +47,43 @@ def calculate_point_limit():
 
         db.session.commit()
     except (AttributeError, SQLAlchemyError) as exception:
-        print(exception, file=sys.stderr)
+        logging.error(exception, file=sys.stderr)
         return create_response({"error": "Nie udało się obliczyć progów."}, 400, "*")
 
     return create_response({"message": "Wyliczono progi rekrutacyjne"}, 200, "*")
+
+
+@point_limit_url.route('/<recruitment_id>', methods=['GET', 'OPTIONS'])
+def get_point_limits(recruitment_id):
+    """
+    Returns point limit for recruitment with given id, and for all connected recruitment
+    :return: flask Response with list of recruitments point limits
+    """
+    if request.method == 'OPTIONS':
+        return create_response({}, 200, '*', 'content-type, token')
+
+    role, response = handle_request_token(request)
+
+    if role is None:
+        return response
+
+    point_limits = {}
+    try:
+        recruitment = Recruitment.query.get(recruitment_id)
+        # handle previous recruitment
+        current_recruitment = recruitment
+        while current_recruitment is not None:
+            point_limits[current_recruitment.cycle_number] = current_recruitment.point_limit
+            current_recruitment = current_recruitment.previous_recruitment
+        # handle next recruitment
+        current_recruitment = recruitment.next_recruitment
+        while current_recruitment is not None:
+            point_limits[current_recruitment.cycle_number] = current_recruitment.point_limit
+            current_recruitment = current_recruitment.next_recruitment
+    except (AttributeError, SQLAlchemyError) as exception:
+        logging.error(exception, file=sys.stderr)
+        return create_response({"error": "Nie udało się pobrać progów rekrutacyjnych."}, 400, "*")
+
+    data = [{"point_limit": value, "cycle_number": key} for key, value in point_limits.items()]
+
+    return create_response(data, 200, "*")

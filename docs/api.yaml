@@ -8,6 +8,8 @@ tags:
   description: Operations about user
 - name: file
   description: Operations connected with files
+- name: recruitment
+  descriptions: Operations connected with recruitments
 schemes:
   - http
 securityDefinitions:
@@ -170,6 +172,39 @@ paths:
           description: error during calculating point limits
           schema:
             $ref: '#/definitions/Error'
+      security:
+          - JWT: []
+  /point-limit/{recruitment_id}:
+    get:
+      tags:
+        - recruitment
+      summary: Gets point limit for recruitment with given id, and for all connected recruitment
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: List of point limits
+          schema:
+            $ref: '#/definitions/PointLimits'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        400:
+          description: error during fetching point limits
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+          - JWT: []
   /recruitment/{recruitment_id}:
     get:
       tags:
@@ -241,7 +276,7 @@ paths:
   /years:
     get:
       tags:
-        - years
+        - recruitment
       summary: Gets a list of years (integers) in wchich recruitment happened
       consumes:
         - application/json
@@ -263,7 +298,7 @@ paths:
   /majors:
     get:
       tags:
-        - majors
+        - recruitment
       summary: Gets list of all majors in DB
       consumes:
         - application/json
@@ -577,3 +612,15 @@ definitions:
         type: integer
       Inne:
         type: integer
+  PointLimits:
+    type: array
+    description: array of point limits with cycle number
+    items:
+      type: object
+      properties:
+        cycle_number:
+          type: integer
+          description: cycle number of recruitment
+        point_limit:
+          type: integer
+          description: point limit of recruitment
