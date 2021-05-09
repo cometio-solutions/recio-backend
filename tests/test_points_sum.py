@@ -16,7 +16,7 @@ def test_getting_points_sum():
     generator_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../generator')
 
     # generating file
-    return_code = subprocess.call('python3 generator.py 1', shell=True, stdout=subprocess.PIPE,
+    return_code = subprocess.call('python3 generator.py 2 5', shell=True, stdout=subprocess.PIPE,
                                   stderr=subprocess.STDOUT, cwd=generator_folder_path)
     assert return_code == 0
 
