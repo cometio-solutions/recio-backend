@@ -12,6 +12,7 @@ def test_getting_origins():
     """
     url_user_auth = 'http://127.0.0.1:5000/user/auth'
     url_origins = 'http://127.0.0.1:5000/origins'
+    url_file_import = 'http://127.0.0.1:5000/file'
     generator_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../generator')
 
     # generating file
@@ -19,11 +20,16 @@ def test_getting_origins():
                                   stderr=subprocess.STDOUT, cwd=generator_folder_path)
     assert return_code == 0
 
-    data = {'email': 'file_import@admin.agh.edu.pl', 'password': '12345'}
+    data = {'email': 'editor@agh.edu.pl', 'password': 'editor'}
     response = requests.post(url_user_auth, json=data)
-    admin_login = json.loads(response.content.decode('utf-8'))
+    editor_login = json.loads(response.content.decode('utf-8'))
 
-    response = requests.get(url_origins, headers={'token': admin_login['token']})
+    # xlsx file
+    files = {'data': ('data.xlsx', open(generator_folder_path + '/data.xlsx', 'rb'))}
+    assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}
+     ).status_code == 200
+
+    response = requests.get(url_origins, headers={'token': editor_login['token']})
     assert response.status_code == 200
 
     data = json.loads(response.content.decode('utf-8'))

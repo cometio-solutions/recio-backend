@@ -29,3 +29,20 @@ def create_response(data, status, origin=None, headers=None):
         response.headers.add('Access-Control-Allow-Headers', headers)
 
     return response
+
+
+def options_response(request):
+    """
+    Handles OPTIONS method before recruitment endpoint.
+
+    To be used in @before_request to handle OPTIONS requests
+
+    :param request: request to ba handled if it is options
+    :return: flask Response object with status 200 if the method is OPTIONS, else None
+    """
+    if request.method == 'OPTIONS':
+        logging.info("Handle options")
+        headers = 'content-type, token'
+        return create_response({}, 200, '*', headers)
+
+    return None
