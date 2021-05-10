@@ -70,7 +70,6 @@ class Candidate(db.Model):
                          field_of_study=candidate_dict['field_of_study'],
                          mode=candidate_dict['mode'], average=average)
 
-
     def add_college(self, candidate_dict):
         """
         Adds college data for candidate
