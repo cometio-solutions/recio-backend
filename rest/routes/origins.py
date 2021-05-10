@@ -1,17 +1,31 @@
 """This module contains endpoint for getting origins of candidates"""
 import logging
+import sys
+
+from sqlalchemy.exc import SQLAlchemyError
 from flask import Blueprint, request
-from rest.common.response import create_response
+from rest.common.response import create_response, options_response
 from rest.common.token import handle_request_token
 from rest.models.candidate import Candidate
+from rest.models.recruitment import Recruitment
 
 origins_url = Blueprint('origins', __name__)
 
 
-@origins_url.route('', methods=['GET', 'OPTIONS'])
-def get_origins():
+@origins_url.before_request
+def handle_options():
     """
-    Collects summarises of all candidates origins.
+    Handles OPTIONS method before recruitment endpoint
+    :return: flask Response object with status 200 if the method is OPTIONS, else None
+    """
+    return options_response(request)
+
+
+@origins_url.route('/<recruitment_id>', methods=['GET', 'OPTIONS'])
+def get_origins(recruitment_id):
+    """
+    Collects origin of all candidates with a certain recruitment id.
+
     In JSON format, where value in each is an Integer:
     {
         'Dolnośląskie'
@@ -40,10 +54,6 @@ def get_origins():
 
     :return: flask Response containing JSON with all origins
     """
-    if request.method == 'OPTIONS':
-        logging.info('Handling options')
-        return create_response({}, 200, '*', 'content-type, token')
-
     logging.info('Getting all origins')
 
     role, response = handle_request_token(request)
@@ -72,17 +82,27 @@ def get_origins():
         'Inne': 0
     }
 
-    for candidate in Candidate.query.all():
-        country = candidate.country.capitalize()
+    try:
+        if not Recruitment.query.filter_by(id=recruitment_id).first():
+            logging.warning('Nie znaleziono rekrutacji o takim ID')
+            return create_response({'error': 'Nie znaleziono podanej rekrutacji'}, 404, '*')
 
-        if country == 'Polska':
-            region = candidate.region.capitalize().replace(' ', '')
+        for candidate in Candidate.query.all():
+            country = candidate.country.capitalize()
 
-            try:
-                origins[region] += 1
-            except KeyError:
-                logging.warning('Unknown candidate region: %s', region)
-        else:
-            origins['Inne'] += 1
+            if country == 'Polska':
+                region = candidate.region.capitalize().replace(' ', '')
 
-        return create_response(origins, 200, '*')
+                try:
+                    origins[region] += 1
+                except KeyError:
+                    logging.warning('Unknown candidate region: %s', region)
+
+            else:
+                origins['Inne'] += 1
+
+    except SQLAlchemyError as exception:
+        logging.error(exception, file=sys.stderr)
+        return create_response({'error': 'Błąd podczas pobierania pochodzenia'}, 400, '*')
+
+    return create_response(origins, 200, '*')
