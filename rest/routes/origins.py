@@ -8,6 +8,7 @@ from rest.common.response import create_response, options_response
 from rest.common.token import handle_request_token
 from rest.models.candidate import Candidate
 from rest.models.recruitment import Recruitment
+from rest.models.candidate_recruitment import CandidateRecruitment
 
 origins_url = Blueprint('origins', __name__)
 
@@ -87,7 +88,18 @@ def get_origins(recruitment_id):
             logging.warning('Nie znaleziono rekrutacji o takim ID')
             return create_response({'error': 'Nie znaleziono podanej rekrutacji'}, 404, '*')
 
-        for candidate in Candidate.query.all():
+        for candidate_recruitment in \
+                CandidateRecruitment.query.filter_by(recruitment_id=recruitment_id):
+
+            candidate = Candidate.query.filter_by(pesel=candidate_recruitment.candidate_pesel)
+
+            if candidate.count() != 1:
+                logging.warning('There is different number of candidates that 1 for pesel: %s',
+                                candidate.pesel)
+                continue
+
+            candidate = candidate.first()
+
             country = candidate.country.capitalize()
 
             if country == 'Polska':
