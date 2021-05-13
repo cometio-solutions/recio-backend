@@ -70,6 +70,8 @@ def get_point_limits(recruitment_id):
     point_limits = {}
     try:
         recruitment = Recruitment.query.get(recruitment_id)
+        if not recruitment:
+            return create_response({"error": "Podana rekrutacja nie istnieje."}, 404, "*")
         # handle previous recruitment
         current_recruitment = recruitment
         while current_recruitment is not None:
