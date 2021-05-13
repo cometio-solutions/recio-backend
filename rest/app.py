@@ -9,6 +9,7 @@ from rest.models.major import Major
 from rest.models.recruitment import Recruitment
 from rest.models.candidate import Candidate
 from rest.models.candidate_recruitment import CandidateRecruitment
+from rest.routes.candidate import candidate_url
 from rest.routes.recruitment import recruitment_url
 from rest.routes.user import user_url
 from rest.routes.file import file_url
@@ -38,6 +39,7 @@ def create_app():
     app.register_blueprint(majors_url, url_prefix='/majors')
     app.register_blueprint(origins_url, url_prefix='/origins')
     app.register_blueprint(points_sum_url, url_prefix='/points')
+    app.register_blueprint(candidate_url, url_prefix='/candidate')
 
     logging.info("Getting secrets")
     app.config['SECRET_KEY'] = os.urandom(24)
