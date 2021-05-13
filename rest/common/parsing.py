@@ -185,6 +185,10 @@ def save_candidates(candidates):
             candidate = Candidate.from_dict(can_dict)
             db.session.add(candidate)
             db.session.commit()
+        if candidate.college_name is None and can_dict['recruitment_degree'] == "MASTER":
+            candidate.add_college(can_dict)
+            db.session.commit()
+
         candidate_recruitment = CandidateRecruitment.from_dict(can_dict)
         candidate_recruitment.candidate = candidate
         candidate_recruitment.recruitment = recruitment

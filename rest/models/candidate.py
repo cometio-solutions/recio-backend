@@ -70,6 +70,19 @@ class Candidate(db.Model):
                          field_of_study=candidate_dict['field_of_study'],
                          mode=candidate_dict['mode'], average=average)
 
+    def add_college(self, candidate_dict):
+        """
+        Adds college data for candidate
+        :param candidate_dict: dictionary with fields:
+        graduation_date, college_name, faculty, field_of_study, mode,average,
+        """
+        self.college_name = candidate_dict['college_name']
+        self.faculty = candidate_dict['faculty']
+        self.field_of_study = candidate_dict['field_of_study']
+        self.mode = candidate_dict['mode']
+        self.average = float(candidate_dict['average'])
+        self.graduation_date = datetime_from_string(candidate_dict['graduation_date'])
+
     def __repr__(self):
         return f'<Candidate(pesel={self.pesel}, name={self.name}, city={self.city},'\
             f' region={self.region}, country={self.country}, highschool={self.highschool}, '\
