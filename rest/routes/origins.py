@@ -91,14 +91,7 @@ def get_origins(recruitment_id):
         for candidate_recruitment in \
                 CandidateRecruitment.query.filter_by(recruitment_id=recruitment_id):
 
-            candidate = Candidate.query.filter_by(pesel=candidate_recruitment.candidate_pesel)
-
-            if candidate.count() != 1:
-                logging.warning('There is different number of candidates that 1 for pesel: %s',
-                                candidate.pesel)
-                continue
-
-            candidate = candidate.first()
+            candidate = Candidate.query.get(candidate_recruitment.candidate_pesel)
 
             country = candidate.country.capitalize()
 
