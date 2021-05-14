@@ -321,11 +321,18 @@ paths:
             $ref: '#/definitions/TokenError'
       security:
         - JWT: []
-  /origins:
+  /origins/{recruitment_id}:
     get:
       tags:
         - origins
-      summary: Gets summary of candidates' origins
+      summary: Gets summary of candidates' origins with certain recruitment id
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
       consumes:
         - application/json
       produces:
@@ -335,10 +342,18 @@ paths:
           description: Dictionary of Polish regions and Other
           schema:
             $ref: '#/definitions/Origins'
+        400:
+          description: error during retreving origins from database
+          schema:
+            $ref: '#/definitions/Error'
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
+        404:
+          description: recruitment with such ID was not found
+          schema:
+            $ref: '#/definitions/Error'
       security:
         - JWT: []
   /points/{recruitment_id}:

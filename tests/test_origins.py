@@ -29,9 +29,13 @@ def test_getting_origins():
     assert requests.post(url_file_import, files=files, headers={'token': editor_login['token']}
      ).status_code == 200
 
-    response = requests.get(url_origins, headers={'token': editor_login['token']})
+    # test good request
+    response = requests.get(url_origins + '/1', headers={'token': editor_login['token']})
     assert response.status_code == 200
 
     data = json.loads(response.content.decode('utf-8'))
     assert len(data.keys()) == 17
     assert isinstance(data['Inne'], int)
+
+    # test bad recruitment id request
+    assert requests.get(url_origins + '/-1', headers={'token': editor_login['token']}).status_code == 404
