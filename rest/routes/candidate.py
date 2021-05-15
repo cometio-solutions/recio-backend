@@ -25,16 +25,8 @@ def get_candidate(candidate_pesel):
         logging.warning("Role is not specified!")
         return response
 
-    if role != 'editor' or role != 'admin':
-        logging.warning("Role is not an editor!")
-        return create_response(
-            {"error": "Tylko edytor moze otrzymac informacje o kandydacie."},
-            403,
-            '*'
-        )
-
     data = dict()
-    candidate = Candidate.filter_by(pesel=candidate_pesel)
+    candidate = Candidate.get(pesel=candidate_pesel)
     if len(candidate) == 0:
         logging.warning("No such user with given pesel!")
         return create_response({"error": "Nie ma urzytkownika o podanym peselu!"}, 404, '*')

@@ -2,7 +2,7 @@
 import random
 import copy
 from datetime import datetime
-from utils import DEGREE, FACULTIES, MAJORS, MODE, faker
+from generator.utils import DEGREE, FACULTIES, MAJORS, MODE, faker
 
 
 class RecruitmentData():

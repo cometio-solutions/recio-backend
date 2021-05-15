@@ -2,7 +2,7 @@
 import random
 import copy
 from datetime import datetime
-from utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
+from generator.utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
 from pesel import Pesel
 
 
