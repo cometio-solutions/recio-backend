@@ -2,8 +2,9 @@
 import random
 import copy
 from datetime import datetime
-from generator.utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
 from pesel import Pesel
+
+from generator.utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
 
 
 class CandidateData():
