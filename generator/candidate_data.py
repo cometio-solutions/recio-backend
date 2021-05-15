@@ -4,7 +4,7 @@ import copy
 from datetime import datetime
 from pesel import Pesel
 
-from generator.utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
+from utils import HIGHSCHOOL_TYPE, FACULTIES, MAJORS, MODE, faker
 
 
 class CandidateData():

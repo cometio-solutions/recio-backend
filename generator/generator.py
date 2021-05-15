@@ -3,8 +3,8 @@ import csv
 import random
 import sys
 import xlsxwriter
-from generator.recruitment_data import RecruitmentData
-from generator.candidate_data import CandidateData
+from recruitment_data import RecruitmentData
+from candidate_data import CandidateData
 
 
 def generate_data(recruitments_number, cycle_number):
