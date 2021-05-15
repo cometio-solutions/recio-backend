@@ -168,9 +168,9 @@ paths:
         - application/json
       responses:
         200:
-          decription: Successfully retrieved candidate data
+          decription: Successfully retrieved candidate's history data
           schema:
-            $ref: '#/definitions/Candidate'
+            $ref: '#/definitions/GetAllRecruitmentData'
         400:
           description: Error during retrieving candidate from database
           schema:
@@ -179,6 +179,39 @@ paths:
           description: User is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
+        404:
+          description: Candidate with such pesel does not exist
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: []
+  /candidate/migration/{candidate_pesel}:
+    get:
+      tags:
+        - candidate
+      summary: Gets candidate's recruitment history
+      parameters:
+        - in: path
+          name: candidate_pesel
+          schema:
+            type: integer
+          required: true
+          description: candidate's pesel
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          decription: Successfully retrieved candidate data
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Candidate'
+        400:
+          description: Error during retrieving candidate from database
+          schema:
+            $ref: '#/definitions/Error'
         404:
           description: Candidate with such pesel does not exist
           schema:
