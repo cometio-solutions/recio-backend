@@ -26,11 +26,11 @@ def get_candidate(candidate_pesel):
         return response
 
     data = dict()
-    candidate = Candidate.get(pesel=candidate_pesel)
-    if len(candidate) == 0:
+    candidate = Candidate.query.get(candidate_pesel)
+    if candidate is None:
         logging.warning("No such user with given pesel!")
         return create_response({"error": "Nie ma urzytkownika o podanym peselu!"}, 404, '*')
 
-    data['data'] = Candidate.to_json(candidate[0])
+    data['data'] = Candidate.to_json(candidate)
 
     return create_response(data, 200, '*')

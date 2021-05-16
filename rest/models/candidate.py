@@ -98,7 +98,7 @@ class Candidate(db.Model):
             "country": candidate.country,
             "highschool": candidate.highschool,
             "highschool_city": candidate.highschool_city,
-            "matura_date": candidate.matura.date.strftime("%m/%d/%Y, %H:%M:%S"),
+            "matura_date": candidate.matura_date.strftime("%m/%d/%Y, %H:%M:%S"),
             "matura_points": candidate.matura_points,
             "graduation_date": candidate.graduation_date,
             "college_name": candidate.college_name,
