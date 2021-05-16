@@ -7,13 +7,14 @@ import os
 import requests
 
 
-def test_get_candidate():
+def test_get_candidate_and_migration():
     """
     Test for getting candidate enpoint
     """
 
     url_user_auth = 'http://127.0.0.1:5000/user/auth'
     url_candidate = 'http://127.0.0.1:5000/candidate/'
+    url_candidate_migration = 'http://127.0.0.1:5000/candidate/migration/'
     url_file_import = 'http://127.0.0.1:5000/file'
 
     generator_folder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../generator')
@@ -43,3 +44,16 @@ def test_get_candidate():
         headers={'token': editor_login['token']}
     )
     assert response.status_code == 200
+
+    response = requests.get(
+        url_candidate + pesel,
+        headers={'token': editor_login['token']}
+    )
+    assert response.status_code == 200
+
+    response = requests.get(
+        url_candidate_migration + pesel,
+        headers={'token': editor_login['token']}
+    )
+    assert response.status_code == 200
+
