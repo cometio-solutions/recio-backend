@@ -83,10 +83,35 @@ class Candidate(db.Model):
         self.average = float(candidate_dict['average'])
         self.graduation_date = datetime_from_string(candidate_dict['graduation_date'])
 
+    @staticmethod
+    def to_json(candidate):
+        """
+        Return json for given candidate
+        :param candidate: candidate object from database
+        :return: A parsed json object with candidate data
+        """
+        return {
+            "pesel": candidate.pesel,
+            "name": candidate.name,
+            "city": candidate.city,
+            "region": candidate.region,
+            "country": candidate.country,
+            "highschool": candidate.highschool,
+            "highschool_city": candidate.highschool_city,
+            "matura_date": candidate.matura_date.strftime("%m/%d/%Y, %H:%M:%S"),
+            "matura_points": candidate.matura_points,
+            "graduation_date": candidate.graduation_date,
+            "college_name": candidate.college_name,
+            "faculty": candidate.faculty,
+            "field_of_study": candidate.field_of_study,
+            "mode": str(candidate.mode),
+            "average": candidate.average,
+        }
+
     def __repr__(self):
-        return f'<Candidate(pesel={self.pesel}, name={self.name}, city={self.city},'\
-            f' region={self.region}, country={self.country}, highschool={self.highschool}, '\
-            f' highschool_city={self.highschool_city}, matura_date={self.matura_date}, '\
-            f' graduation_date={self.graduation_date}, college_name={self.college_name}, '\
-            f' faculty={self.faculty}, field_of_study={self.field_of_study}, mode={self.mode}, '\
-            f' average={self.average})>'
+        return f'<Candidate(pesel={self.pesel}, name={self.name}, city={self.city},' \
+               f' region={self.region}, country={self.country}, highschool={self.highschool}, ' \
+               f' highschool_city={self.highschool_city}, matura_date={self.matura_date}, ' \
+               f' graduation_date={self.graduation_date}, college_name={self.college_name}, ' \
+               f' faculty={self.faculty}, field_of_study={self.field_of_study}, mode={self.mode}, '\
+               f' average={self.average})>'
