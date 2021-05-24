@@ -293,9 +293,9 @@ paths:
         - application/json
       responses:
         200:
-          description: Recruitment data with list of candidates
+          description: Summary of recruitment cycles
           schema:
-            $ref: '#/definitions/RecruitmentData'
+            $ref: '#/definitions/RecruitmentSummary'
         401:
           description: user is unauthenticated
           schema:
