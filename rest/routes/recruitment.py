@@ -164,7 +164,7 @@ def get_recruitment_cycles_sumary(recruitment_id):
     try:
         recruitment = Recruitment.query.get(recruitment_id)
         if not recruitment:
-            return create_response({"error": "Podana rekrutacja nie istnieje."}, 404, "*")
+            return create_response({"error": "Nie istnieje podana rekrutacja."}, 404, "*")
         # handle next recruitment
         current_recruitment = recruitment
         while current_recruitment is not None:
