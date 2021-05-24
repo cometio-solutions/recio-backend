@@ -67,3 +67,8 @@ def test_recruitment_data():
         url_recruitment + '1/previous',
         headers={'token': editor_login['token']}
     ).status_code == 404
+    # testing fetching recruitment cycles summary
+    assert requests.get(
+        url_recruitment + '1/summary',
+        headers={'token': editor_login['token']}
+    ).status_code == 200

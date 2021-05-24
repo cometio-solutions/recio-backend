@@ -146,3 +146,39 @@ def get_recruitment_data(recruitment, error_message):
 
     logging.info("Got recruitment data")
     return create_response(data, 200, '*')
+
+
+@recruitment_url.route('/<recruitment_id>/summary', methods=['GET', 'OPTIONS'])
+def get_recruitment_cycles_sumary(recruitment_id):
+    """
+    Get summary of all recruitment cycles to which recruitment with given id belongs
+    :param recruitment_id: id of recruitment
+    :return: flask Response
+    """
+    role, response = handle_request_token(request)
+
+    if role is None:
+        return response
+
+    recruitments = []
+    try:
+        recruitment = Recruitment.query.get(recruitment_id)
+        if not recruitment:
+            return create_response({"error": "Podana rekrutacja nie istnieje."}, 404, "*")
+        # handle previous recruitment
+        current_recruitment = recruitment
+        while current_recruitment is not None:
+            recruitments.append(current_recruitment)
+            current_recruitment = current_recruitment.previous_recruitment
+        # handle next recruitment
+        current_recruitment = recruitment.next_recruitment
+        while current_recruitment is not None:
+            recruitments.append(current_recruitment)
+            current_recruitment = current_recruitment.next_recruitment
+        # calculates summary
+        data = Recruitment.get_cycles_summary(recruitments)
+    except (AttributeError, SQLAlchemyError) as exception:
+        logging.error(exception, file=sys.stderr)
+        return create_response({"error": "Nie udało się pobrać danych."}, 400, "*")
+
+    return create_response(data, 200, "*")
