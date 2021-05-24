@@ -165,16 +165,16 @@ def get_recruitment_cycles_sumary(recruitment_id):
         recruitment = Recruitment.query.get(recruitment_id)
         if not recruitment:
             return create_response({"error": "Podana rekrutacja nie istnieje."}, 404, "*")
-        # handle previous recruitment
+        # handle next recruitment
         current_recruitment = recruitment
         while current_recruitment is not None:
             recruitments.append(current_recruitment)
-            current_recruitment = current_recruitment.previous_recruitment
-        # handle next recruitment
-        current_recruitment = recruitment.next_recruitment
+            current_recruitment = current_recruitment.next_recruitment
+        # handle previous recruitment
+        current_recruitment = recruitment.previous_recruitment
         while current_recruitment is not None:
             recruitments.append(current_recruitment)
-            current_recruitment = current_recruitment.next_recruitment
+            current_recruitment = current_recruitment.previous_recruitment
         # calculates summary
         data = Recruitment.get_cycles_summary(recruitments)
     except (AttributeError, SQLAlchemyError) as exception:
