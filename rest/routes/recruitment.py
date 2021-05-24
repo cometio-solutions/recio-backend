@@ -86,7 +86,7 @@ def get_recruitment_with_candidates(recruitment_id):
     if role is None:
         return response
 
-    recruitment = Recruitment.query.filter_by(id=recruitment_id).first()
+    recruitment = Recruitment.query.get(recruitment_id)
     return get_recruitment_data(recruitment, "Nie znaleziono podanej rekrutacji")
 
 
