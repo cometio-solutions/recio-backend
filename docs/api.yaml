@@ -310,6 +310,76 @@ paths:
             $ref: '#/definitions/Error'
       security:
         - JWT: []
+  /recruitment/{recruitment_id}/previous:
+    get:
+      tags:
+        - recruitment
+      summary: Gets previous recruitment cycle
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Recruitment data with list of candidates
+          schema:
+            $ref: '#/definitions/RecruitmentData'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        404:
+          description: recruitment not found or previous recruitment cycle does not exist
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: error during fetching data
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: []
+  /recruitment/{recruitment_id}/next:
+    get:
+      tags:
+        - recruitment
+      summary: Gets next recruitment cycle
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Recruitment data with list of candidates
+          schema:
+            $ref: '#/definitions/RecruitmentData'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        404:
+          description: recruitment not found or next recruitment cycle does not exist
+          schema:
+            $ref: '#/definitions/Error'
+        400:
+          description: error during fetching data
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: []
   /file:
     post:
       tags:

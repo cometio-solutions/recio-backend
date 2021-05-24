@@ -86,16 +86,63 @@ def get_recruitment_with_candidates(recruitment_id):
     if role is None:
         return response
 
+    recruitment = Recruitment.query.filter_by(id=recruitment_id).first()
+    return get_recruitment_data(recruitment, "Nie znaleziono podanej rekrutacji")
+
+
+@recruitment_url.route('/<recruitment_id>/previous', methods=['GET', 'OPTIONS'])
+def get_previous_recruitment(recruitment_id):
+    """
+    Get previous recruitment cycle for recruitment with given id and all candidates
+    :param recruitment_id: id of recruitment
+    :return: flask Response containing json with recruitment data
+    """
+    role, response = handle_request_token(request)
+
+    if role is None:
+        return response
+
+    recruitment = Recruitment.query.get(recruitment_id)
+    if not recruitment:
+        return create_response({"error": "Nie znaleziono podanej rekrutacji"}, 404, '*')
+    return get_recruitment_data(recruitment.previous_recruitment,
+                                "Nie ma poprzedniego cyklu rekrutacji")
+
+
+@recruitment_url.route('/<recruitment_id>/next', methods=['GET', 'OPTIONS'])
+def get_next_recruitment(recruitment_id):
+    """
+    Get next recruitment cycle for recruitment with given id and all candidates
+    :param recruitment_id: id of recruitment
+    :return: flask Response containing json with recruitment data
+    """
+    role, response = handle_request_token(request)
+
+    if role is None:
+        return response
+
+    recruitment = Recruitment.query.get(recruitment_id)
+    if not recruitment:
+        return create_response({"error": "Nie znaleziono podanej rekrutacji"}, 404, '*')
+    return get_recruitment_data(recruitment.next_recruitment, "Nie ma następnego cyklu rekrutacji")
+
+
+def get_recruitment_data(recruitment, error_message):
+    """
+    Returns recruitment data for given recruitment
+    :param recruitment: recruitment object
+    :param error_message: error message that should be returned if recruitment is null
+    """
     try:
-        recruitment = Recruitment.query.filter_by(id=recruitment_id).first()
         if not recruitment:
-            return create_response({"error": "Nie znaleziono podanej rekrutacji"}, 404, '*')
+            return create_response({"error": error_message}, 404, '*')
+
         data = Recruitment.to_json(recruitment, len(recruitment.candidate_recruitments))
         data['candidates'] = [CandidateRecruitment.to_json(rec) for rec in
                               recruitment.candidate_recruitments]
     except (AttributeError, SQLAlchemyError) as exception:
         logging.error(exception, file=sys.stderr)
-        return create_response({"error": "Błąd podczas pobierania kandydatów."}, 400, '*')
+        return create_response({"error": "Błąd podczas pobierania danych."}, 400, '*')
 
-    logging.info("Got all recruitment data")
+    logging.info("Got recruitment data")
     return create_response(data, 200, '*')
