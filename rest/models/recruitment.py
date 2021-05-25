@@ -83,8 +83,9 @@ class Recruitment(db.Model):
             if recruitment.point_limit is None:
                 is_active = True
             else:
-                overall_qualified += sum(1 for candidate in recruitment.candidate_recruitments
-                                         if candidate.status == RecruitmentStatus.QUALIFIED)
+                overall_qualified += len([candidate for candidate in
+                                         recruitment.candidate_recruitments
+                                         if candidate.status == RecruitmentStatus.QUALIFIED])
                 if min_point_limit is not None:
                     min_point_limit = min(min_point_limit, recruitment.point_limit)
                 else:

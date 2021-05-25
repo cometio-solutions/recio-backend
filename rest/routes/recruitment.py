@@ -132,6 +132,7 @@ def get_recruitment_data(recruitment, error_message):
     Returns recruitment data for given recruitment
     :param recruitment: recruitment object
     :param error_message: error message that should be returned if recruitment is null
+    :return: Flask response
     """
     try:
         if not recruitment:
@@ -175,10 +176,10 @@ def get_recruitment_cycles_sumary(recruitment_id):
         while current_recruitment is not None:
             recruitments.append(current_recruitment)
             current_recruitment = current_recruitment.previous_recruitment
-        # calculates summary
-        data = Recruitment.get_cycles_summary(recruitments)
     except (AttributeError, SQLAlchemyError) as exception:
         logging.error(exception, file=sys.stderr)
         return create_response({"error": "Nie udało się pobrać danych."}, 400, "*")
+    # calculates summary
+    data = Recruitment.get_cycles_summary(recruitments)
 
     return create_response(data, 200, "*")
