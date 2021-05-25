@@ -43,3 +43,27 @@ def test_recruitment_data():
         url_recruitment + '1',
         headers={'token': editor_login['token']}
     ).status_code == 200
+
+    # testing fetching next recruitment cycle
+    response = requests.get(
+        url_recruitment + '1/next',
+        headers={'token': editor_login['token']}
+    )
+    assert response.status_code == 200
+    data = json.loads(response.content.decode('utf-8'))
+
+    assert requests.get(
+        url_recruitment + str(data['id']) + '/next',
+        headers={'token': editor_login['token']}
+    ).status_code == 404
+
+    # testing fetching previous recruitment cycle
+    assert requests.get(
+        url_recruitment + str(data['id']) + '/previous',
+        headers={'token': editor_login['token']}
+    ).status_code == 200
+
+    assert requests.get(
+        url_recruitment + '1/previous',
+        headers={'token': editor_login['token']}
+    ).status_code == 404
