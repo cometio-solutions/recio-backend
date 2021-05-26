@@ -1,5 +1,6 @@
 """This module stores Recruitment model"""
 from datetime import datetime
+from rest.models.candidate_recruitment import RecruitmentStatus
 from rest.common.date import datetime_from_string
 from rest.db import db
 
@@ -59,6 +60,42 @@ class Recruitment(db.Model):
             'candidates_num': candidates_num,
             'point_limit': rec.point_limit,
             'is_active': bool(rec.end_date > datetime.now()),
+            'faculty': rec.major.faculty,
+            'degree': str(rec.major.degree),
+            'major_name': rec.major.name,
+            'major_mode': str(rec.major.mode)
+        }
+
+    @staticmethod
+    def get_cycles_summary(recruitments):
+        """
+        Return json with summary of recruitments
+        :param recruitments: list of recruitments
+        :return: summary dict
+        """
+        rec = recruitments[0]
+        candidates_number = 0
+        overall_qualified = 0
+        min_point_limit = None
+        is_active = False
+        for recruitment in recruitments:
+            candidates_number += len(recruitment.candidate_recruitments)
+            if recruitment.point_limit is None:
+                is_active = True
+            else:
+                overall_qualified += len([candidate for candidate in
+                                         recruitment.candidate_recruitments
+                                         if candidate.status == RecruitmentStatus.QUALIFIED])
+                if min_point_limit is not None:
+                    min_point_limit = min(min_point_limit, recruitment.point_limit)
+                else:
+                    min_point_limit = recruitment.point_limit
+        return {
+            'cycles_number': len(recruitments),
+            'overall_candidates_num': candidates_number,
+            'overall_qualified': overall_qualified,
+            'min_point_limit': min_point_limit,
+            'is_active': is_active,
             'faculty': rec.major.faculty,
             'degree': str(rec.major.degree),
             'major_name': rec.major.name,

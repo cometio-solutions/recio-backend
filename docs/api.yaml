@@ -293,9 +293,9 @@ paths:
         - application/json
       responses:
         200:
-          description: Recruitment data with list of candidates
+          description: Summary of recruitment cycles
           schema:
-            $ref: '#/definitions/RecruitmentData'
+            $ref: '#/definitions/RecruitmentSummary'
         401:
           description: user is unauthenticated
           schema:
@@ -306,6 +306,41 @@ paths:
             $ref: '#/definitions/Error'
         400:
           description: error during fetching data
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: []
+  /recruitment/{recruitment_id}/summary:
+    get:
+      tags:
+        - recruitment
+      summary: Gets summary of all recruitments cycles to which given recruitment belongs
+      parameters:
+        - in: path
+          name: recruitment_id
+          schema:
+            type: integer
+          required: true
+          description: id of recruitment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Summary of all recruitment cycles
+          schema:
+            $ref: '#/definitions/RecruitmentSummary'
+        400:
+          description: error during fetching data
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        404:
+          description: recruitment not found
           schema:
             $ref: '#/definitions/Error'
       security:
@@ -331,16 +366,16 @@ paths:
           description: Recruitment data with list of candidates
           schema:
             $ref: '#/definitions/RecruitmentData'
+        400:
+          description: error during fetching data
+          schema:
+            $ref: '#/definitions/Error'
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
         404:
           description: recruitment not found or previous recruitment cycle does not exist
-          schema:
-            $ref: '#/definitions/Error'
-        400:
-          description: error during fetching data
           schema:
             $ref: '#/definitions/Error'
       security:
@@ -366,16 +401,16 @@ paths:
           description: Recruitment data with list of candidates
           schema:
             $ref: '#/definitions/RecruitmentData'
+        400:
+          description: error during fetching data
+          schema:
+            $ref: '#/definitions/Error'
         401:
           description: user is unauthenticated
           schema:
             $ref: '#/definitions/TokenError'
         404:
           description: recruitment not found or next recruitment cycle does not exist
-          schema:
-            $ref: '#/definitions/Error'
-        400:
-          description: error during fetching data
           schema:
             $ref: '#/definitions/Error'
       security:
@@ -737,6 +772,36 @@ definitions:
             average:
               description: Average of candidate's bachelor studies
               type: number
+  RecruitmentSummary:
+    type: object
+    properties:
+      cycles_number:
+        description: Number of cycles.
+        type: integer
+      overall_candidates_number:
+        description: Overall number of candidates that took part in all recruitment cycles
+        type: integer
+      overall_qualified:
+        description: Specifies how many canidates are qualified
+        type: integer
+      min_point_limit:
+        description: Minimal points needed
+        type: integer
+      is_active:
+        description: Determines whether any recruitment cycle is still open.
+        type: boolean
+      faculty:
+        description: Faculty name.
+        type: string
+      degree:
+        description: Degree type Bachelor/Master.
+        type: string
+      major_name:
+        description: Major name.
+        type: string
+      major_mode:
+        description: Major mode Part time/Full time.
+        type: string
   Error:
     type: object
     properties:
