@@ -71,4 +71,9 @@ def get_candidate_migration(candidate_pesel):
     data['data'] = [Recruitment.to_json(rec, len(rec.candidate_recruitments))
                     for rec in recruitments]
 
+    assert len(data['data']) == len(candidate_recruitments)
+
+    for idx in range(len(data['data'])):
+        data['data'][idx]['status'] = candidate_recruitments[idx].status.value
+
     return create_response(data, 200, '*')

@@ -13,7 +13,7 @@ class RecruitmentStatus(enum.Enum):
 
 class CandidateRecruitment(db.Model):
     """
-    This class coresponds to candidateRecruitment table in database.
+    This class corresponds to candidateRecruitment table in database.
     It describes a candidate recruitment and stores data connected with recruitment proccess
     """
     __tablename__ = 'candidateRecruitment'
