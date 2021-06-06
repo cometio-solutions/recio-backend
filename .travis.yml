@@ -33,7 +33,14 @@ jobs:
       script: docker-compose build
     - stage: test
       if: type = pull_request
-      script: docker-compose up --build -d && sleep 60 && pytest tests
+      script:
+        - docker-compose up --build -d
+        - |
+          until $(curl --output /dev/null --silent --head --fail http://localhost:5000/healthcheck); do
+            printf '.'
+            sleep 2
+          done
+        - pytest tests
 
     - stage: build
       if: type = push
