@@ -34,20 +34,31 @@ def column_chart(
 
     idx = 0
 
+    max_val = 0
+
+    bars = []
+
     for label, value in kwargs.items():
-        axes.bar(
-            x_pos + idx * bar_width,
-            value,
-            bar_width,
-            label=label
+        bars.append(axes.bar(
+                x_pos + idx * bar_width,
+                value,
+                bar_width,
+                label=label
+            )
         )
         idx += 1
+        max_val = max(max_val, max(value))
 
     axes.set_ylabel(y_label)
     axes.set_title(chart_name)
-    axes.set_xticks(x_pos + bar_width * (labels_num - 1) / 2)
-    axes.set_xticklabels(labels)
+    axes.set_xticks(x_pos + bar_width * (len(kwargs) - 1) / 2)
+    axes.set_ylim([0, int(1.3 * max_val)])
+    axes.set_xticklabels(labels, rotation=45)
     axes.legend()
+
+    for bar in bars:
+        axes.bar_label(bar, padding=3)
+
     fig.tight_layout()
 
     return fig
