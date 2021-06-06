@@ -56,8 +56,8 @@ def column_chart(
     axes.set_xticklabels(labels, rotation=45)
     axes.legend()
 
-    for bar in bars:
-        axes.bar_label(bar, padding=3)
+    for bar_text in bars:
+        axes.bar_label(bar_text, padding=3)
 
     fig.tight_layout()
 
