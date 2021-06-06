@@ -59,7 +59,7 @@ def get_candidate_migration(candidate_pesel):
         return response
 
     data = dict()
-    candidate_recruitments = CandidateRecruitment.query\
+    candidate_recruitments = CandidateRecruitment.query \
         .filter_by(candidate_pesel=candidate_pesel).all()
     if len(candidate_recruitments) == 0:
         logging.warning("No such user with given pesel!")
@@ -74,6 +74,9 @@ def get_candidate_migration(candidate_pesel):
     assert len(data['data']) == len(candidate_recruitments)
 
     for idx in range(len(data['data'])):
-        data['data'][idx]['status'] = candidate_recruitments[idx].status.value
+        if candidate_recruitments[idx].status:
+            data['data'][idx]['status'] = candidate_recruitments[idx].status.value
+        else:
+            data['data'][idx]['status'] = "W TRAKCIE"
 
     return create_response(data, 200, '*')
