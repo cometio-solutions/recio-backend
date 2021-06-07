@@ -1,5 +1,6 @@
-FROM alpine:3.8
+FROM alpine:latest
 RUN apk add python3
+RUN apk add cmd:pip3
 RUN apk add py-cryptography
 RUN apk add bash
 RUN apk add py3-sqlalchemy
