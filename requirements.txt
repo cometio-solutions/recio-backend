@@ -11,3 +11,4 @@ faker
 pylightxl
 coloredlogs
 ruamel.yaml
+matplotlib
