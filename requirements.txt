@@ -12,4 +12,3 @@ pylightxl
 coloredlogs
 ruamel.yaml
 matplotlib
-numpy
