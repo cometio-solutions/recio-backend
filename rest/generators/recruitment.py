@@ -28,7 +28,7 @@ def column_chart(
 
     labels_num = len(labels)
 
-    x_pos = [i for i in range(labels_num)]
+    x_pos = list(range(labels_num))
     bar_width = 1.0 / labels_num - 0.1
 
     idx = 0
