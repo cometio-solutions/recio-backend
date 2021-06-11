@@ -63,7 +63,7 @@ def column_chart(
     return fig
 
 
-def generate_plots(recruitment_data: dict):
+def generate_plots(recruitment_data):
     """
     Generate plots for given recruitment data
     You have to provide given fields:
@@ -75,7 +75,7 @@ def generate_plots(recruitment_data: dict):
     }
     Parameters
     ----------
-    recruitment_data : dict
+    recruitment_data
 
     Returns
     -------
@@ -98,7 +98,7 @@ def generate_plots(recruitment_data: dict):
         point_limits.append(rec['point_limit'])
         candidates_num.append(rec['candidates_num'])
 
-    with PdfPages("recruitment.pdf") as pdf:
+    with PdfPages("rest/recruitment.pdf") as pdf:
         column_chart(labels=labels,
                      chart_name="Limit punktów do ilości kandydatów",
                      y_label="",

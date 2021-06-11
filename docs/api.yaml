@@ -564,6 +564,63 @@ paths:
             $ref: '#/definitions/Error'
       security:
         - JWT: []
+  /report/{year}:
+    get:
+      tags:
+        - report
+      summary: Get PDF recruitment summary for certain year
+      parameters:
+        - in: path
+          name: year
+          schema:
+            type: integer
+          required: true
+          description: recruitment year to get report for
+      consumes:
+        - application/json
+      produces:
+        - application/pdf
+      responses:
+        200:
+          desciption: PDF report successfully gotten
+          schema:
+            type: file
+        400:
+          description: error during getting PDF
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+        404:
+          description: No recruitments found for that year
+          schema:
+            $ref: '#/definitions/Error'
+      security:
+        - JWT: [ ]
+  /report/plots:
+    get:
+      tags:
+        - report
+      summary: Get PDF plot summary of recruitments
+      produces:
+        - application/pdf
+      responses:
+        200:
+          desciption: PDF report successfully gotten
+          schema:
+            type: file
+        400:
+          description: error during getting PDF
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: user is unauthenticated
+          schema:
+            $ref: '#/definitions/TokenError'
+      security:
+        - JWT: [ ]
 
 definitions:
   CreateUserData:

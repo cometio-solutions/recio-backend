@@ -19,6 +19,7 @@ from rest.routes.years import years_url
 from rest.routes.majors import majors_url
 from rest.routes.origins import origins_url
 from rest.routes.points_sum import points_sum_url
+from rest.routes.report import report_url
 
 
 def create_app():
@@ -40,6 +41,7 @@ def create_app():
     app.register_blueprint(origins_url, url_prefix='/origins')
     app.register_blueprint(points_sum_url, url_prefix='/points')
     app.register_blueprint(candidate_url, url_prefix='/candidate')
+    app.register_blueprint(report_url, url_prefix='/report')
 
     logging.info("Getting secrets")
     app.config['SECRET_KEY'] = os.urandom(24)
