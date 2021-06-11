@@ -32,7 +32,7 @@ def get_recruitment_pdf_for_year(year):
 
     try:
         path = generate_recruitment_year_report(year)
-    except Exception as ex:
+    except IOError as ex:
         logging.error(ex)
         return create_response({'error': 'Błąd podczas tworzenia PDFu'}, 400, '*')
 
@@ -55,6 +55,11 @@ def get_recruitment_pdf_for_year(year):
 
 @report_url.route('/plots', methods=['GET', 'OPTIONS'])
 def get_plots_recruitments_pdf_report():
+    """
+    Endpoint for getting report (plots) for all recruitments.
+
+    :return: pdf file if success else response with error message
+    """
     if request.method == 'OPTIONS':
         return options_response(request)
 
@@ -81,7 +86,7 @@ def get_plots_recruitments_pdf_report():
 
     try:
         path = generate_plots(recruitments)
-    except Exception as ex:
+    except IOError as ex:
         logging.error(ex)
         return create_response({'error': 'Błąd podczas tworzenia PDFu'}, 400, '*')
 

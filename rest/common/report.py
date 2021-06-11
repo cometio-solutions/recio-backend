@@ -12,10 +12,8 @@ def generate_recruitment_year_report(year):
     :param year: year of recruitment
     :return: path to pdf file or 404 if found no recruitments for the year
     """
-    all_recruitments = Recruitment.query.all()
-
     recruitments = []
-    for rec in all_recruitments:
+    for rec in Recruitment.query.all():
         summary = Recruitment.get_cycles_summary([rec])
         rec_json = Recruitment.to_json(rec, summary['overall_candidates_num'])
 
