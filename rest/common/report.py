@@ -78,6 +78,7 @@ def generate_recruitment_year_report(year):
             fig.patch.set_visible(False)
             axes.xaxis.set_visible(False)
             axes.yaxis.set_visible(False)
+            axes.axis('off')
 
             if current_row + row_limit < len(plot_data):
                 last_row = current_row + row_limit
