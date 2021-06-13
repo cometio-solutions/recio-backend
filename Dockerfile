@@ -1,4 +1,3 @@
-# FROM alpine:latest
 FROM openjdk:8-jre-alpine
 
 RUN apk add --no-cache tesseract-ocr python3 py3-numpy && \

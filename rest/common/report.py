@@ -10,10 +10,18 @@ def generate_recruitment_year_report(year):
     created from it.
 
     :param year: year of recruitment
-    :return: path to pdf file
+    :return: path to pdf file or 404 if found no recruitments for the year
     """
-    recruitments = [rec.to_json() for rec in Recruitment.query.all()
-                    if rec.to_json()['end_date'].year == year]
+    recruitments = []
+    for rec in Recruitment.query.all():
+        summary = Recruitment.get_cycles_summary([rec])
+        rec_json = Recruitment.to_json(rec, summary['overall_candidates_num'])
+
+        if rec_json['end_date'].split(',')[0].split('/')[2] == str(year):
+            recruitments.append(rec_json)
+
+    if len(recruitments) == 0:
+        return 404
 
     plot_data = []
     for rec in recruitments:
@@ -30,7 +38,7 @@ def generate_recruitment_year_report(year):
     columns = ['Liczba miejsc', 'Liczba kandydatów', 'Limit punktów', 'Wydział',
                'Stopień', 'Nazwa kierunku', 'Tryb studiów']
 
-    with PdfPages("recruitment_year.pdf") as pdf:
+    with PdfPages("rest/recruitment_year.pdf") as pdf:
         current_row = 0
         row_limit = 21
 

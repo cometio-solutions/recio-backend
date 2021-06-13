@@ -24,12 +24,15 @@ def column_chart(
     chart : matplotlib figure
     """
 
+    if not labels:
+        return ""
+
     fig, axes = plt.subplots()
 
     labels_num = len(labels)
 
     x_pos = list(range(labels_num))
-    bar_width = 1.0 / labels_num - 0.1
+    bar_width = 3.0 / labels_num - 0.1
 
     idx = 0
 
@@ -39,7 +42,7 @@ def column_chart(
 
     for label, value in kwargs.items():
         bars.append(axes.bar(
-                x_pos + idx * bar_width,
+                [x + idx * bar_width for x in x_pos],
                 value,
                 bar_width,
                 label=label
@@ -50,20 +53,17 @@ def column_chart(
 
     axes.set_ylabel(y_label)
     axes.set_title(chart_name)
-    axes.set_xticks(x_pos + bar_width * (len(kwargs) - 1) / 2)
+    axes.set_xticks([x + bar_width * (len(kwargs) - 1) / 2 for x in x_pos])
     axes.set_ylim([0, int(1.3 * max_val)])
-    axes.set_xticklabels(labels, rotation=45)
+    axes.set_xticklabels(labels, rotation=45, size=3)
     axes.legend()
-
-    for bar_text in bars:
-        axes.bar_label(bar_text, padding=3)
 
     fig.tight_layout()
 
     return fig
 
 
-def generate_plots(recruitment_data: dict):
+def generate_plots(recruitment_data):
     """
     Generate plots for given recruitment data
     You have to provide given fields:
@@ -75,7 +75,7 @@ def generate_plots(recruitment_data: dict):
     }
     Parameters
     ----------
-    recruitment_data : dict
+    recruitment_data
 
     Returns
     -------
@@ -98,7 +98,7 @@ def generate_plots(recruitment_data: dict):
         point_limits.append(rec['point_limit'])
         candidates_num.append(rec['candidates_num'])
 
-    with PdfPages("recruitment.pdf") as pdf:
+    with PdfPages("rest/recruitment.pdf") as pdf:
         column_chart(labels=labels,
                      chart_name="Limit punktów do ilości kandydatów",
                      y_label="",
