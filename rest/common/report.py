@@ -1,8 +1,42 @@
 """Module for functions that generate report"""
-import logging
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from rest.models.recruitment import Recruitment
+
+
+def get_plot_date(recruitments):
+    """
+    Helper function for report generating
+
+    :param recruitments: recruitmens
+    :return: data used in plotting the report
+    """
+    plot_data = []
+    for _, rec in enumerate(recruitments):
+        major_name = rec['major_name']
+        split_major_name = major_name.split(' ')
+        if len(split_major_name) > 3:
+            count = 0
+            major_name = ''
+            for word in split_major_name:
+                major_name += word
+                if count == 1:
+                    major_name += '\n'
+                else:
+                    major_name += ' '
+                count += 1
+
+        plot_data.append([
+            rec['slot_limit'],
+            rec['candidates_num'],
+            rec['point_limit'],
+            rec['faculty'],
+            '1' if 'pierwszego' in rec['degree'] else '2',
+            major_name,
+            rec['major_mode'].replace('Studia', '').strip()
+        ])
+
+    return plot_data
 
 
 def generate_recruitment_year_report(year):
@@ -24,32 +58,7 @@ def generate_recruitment_year_report(year):
     if len(recruitments) == 0:
         return 404
 
-    plot_data = []
-    major_names_with_newlines = []
-    for i, rec in enumerate(recruitments):
-        major_name = rec['major_name']
-        split_major_name = major_name.split(' ')
-        if len(split_major_name) > 3:
-            count = 0
-            major_name = ''
-            for word in split_major_name:
-                major_name += word
-                if count == 1:
-                    major_names_with_newlines.append(i + 1)
-                    major_name += '\n'
-                else:
-                    major_name += ' '
-                count += 1
-
-        plot_data.append([
-            rec['slot_limit'],
-            rec['candidates_num'],
-            rec['point_limit'],
-            rec['faculty'],
-            '1' if 'pierwszego' in rec['degree'] else '2',
-            major_name,
-            rec['major_mode'].replace('Studia', '').strip()
-        ])
+    plot_data = get_plot_date(recruitments)
 
     columns = ['Liczba\nmiejsc', 'Liczba\nkandydatów', 'Limit\npunktów', 'Wydział',
                'Stopień', 'Nazwa kierunku', 'Tryb\nstudiów']
