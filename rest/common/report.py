@@ -13,18 +13,23 @@ def get_plot_date(recruitments):
     """
     plot_data = []
     for _, rec in enumerate(recruitments):
-        major_name = rec['major_name']
+        major_name = rec['major_name'].replace('-', ' - ')
         split_major_name = major_name.split(' ')
         if len(split_major_name) > 3:
             count = 0
             major_name = ''
+            used_newline = False
+
             for word in split_major_name:
+                if len(word) > 1:
+                    count += 1
+
                 major_name += word
-                if count == 1:
+                if count == 2 and not used_newline:
+                    used_newline = True
                     major_name += '\n'
                 else:
                     major_name += ' '
-                count += 1
 
         plot_data.append([
             rec['slot_limit'],
@@ -73,6 +78,7 @@ def generate_recruitment_year_report(year):
             fig.patch.set_visible(False)
             axes.xaxis.set_visible(False)
             axes.yaxis.set_visible(False)
+            axes.axis('off')
 
             if current_row + row_limit < len(plot_data):
                 last_row = current_row + row_limit
